@@ -6,15 +6,10 @@
  * @license    http://www.opensource.org/licenses/gpl-2.0.php GNU GPL version 2
  * @version    2.0
  *
- *
  * @Developer Jordi Tost (Follow Me: @jorditost)
  *
- * 02.07.2013 - Added jQuery in footer variable
- *              Global variable for site strings (for jQuery)
- *              More advanced clean wp_head
- *
- * Note: PHP vars are lowercase.
- *       Vars that are passed to jQuery are camelcase.   
+ * Notes: PHP vars are lowercase.
+ *        Vars that are passed to jQuery are camelcase.   
  */
 
 

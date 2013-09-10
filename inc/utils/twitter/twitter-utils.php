@@ -8,8 +8,8 @@
  *
  * @Developer Jordi Tost (Follow Me: @jorditost)
  *
- * 18/06/2013 - Integration of Twitter API 1.1 with the tmhOAuth lib
- *				https://github.com/themattharris/tmhOAuth
+ * Notes: Integration of Twitter API 1.1 with the tmhOAuth lib
+ *		  https://github.com/themattharris/tmhOAuth
  */
 
 require 'tmhOAuth/tmhOAuth.php';
