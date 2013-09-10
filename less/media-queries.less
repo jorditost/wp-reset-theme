@@ -1,0 +1,110 @@
+//////////////////////////
+// MEDIA QUERIES Mixins
+//////////////////////////
+
+.media-screen(@wrap-width) {
+	
+	// Structure
+	.inside {
+		width: @wrap-width;
+	}
+}
+
+///////////////////
+// MEDIA QUERIES
+///////////////////
+
+@media screen and (max-width: 1024px) {
+	
+	@wrap-width: 660px;
+	.media-screen(@wrap-width);
+}
+
+@media screen and (max-width: 760px) {
+
+	@wrap-width: 480px;
+	.media-screen(@wrap-width);
+}
+
+@media screen and (max-width: 520px) {
+
+	@wrap-width: 90%;
+	.media-screen(@wrap-width);
+
+	.column {
+		width: 100%;
+		margin:0 0 20px 0;
+		text-align: center;
+	}
+}
+
+////////////////////
+// Mobile Devices
+////////////////////
+
+//http://www.blog.highub.com/mobile-2/revisit-hardboiled-css3-media-queries/
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 320px) and (max-device-width : 569px) {
+
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen and (min-width : 321px) and (max-device-width: 569px) {
+
+}
+
+// .mobile {
+	
+// }
+
+////////////////////
+// Retina display
+////////////////////
+
+// @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+//        only screen and (min--moz-device-pixel-ratio: 1.5),
+//        only screen and (min-resolution: 240dpi) {
+       
+// 		#header .logo {
+// 			background-image: url(images/thinkmoto_logo@2x.png);
+// 			-moz-background-size: 159px 25px;
+// 			-o-background-size: 159px 25px;
+// 			-webkit-background-size: 159px 25px;
+// 			background-size: 159px 25px;
+// 		}
+		
+// 		.social-button {
+// 			background-image: url(images/social-buttons@2x.png);
+// 			-moz-background-size: 164px 20px;
+// 			-o-background-size: 164px 20px;
+// 			-webkit-background-size: 164px 20px;
+// 			background-size: 164px 20px;
+// 		}
+// }
+
+//////////////////////////////////////////
+// Smartphones (portrait and landscape)
+//////////////////////////////////////////
+
+// @media only screen 
+// and (min-device-width : 320px) 
+// and (max-device-width : 480px) {
+
+// 	// Be inspired
+// 	#page-be-inspired {
+
+// 		.post {
+			
+// 			&:after {
+// 				content:'';
+// 				position: absolute;
+// 				bottom: 10px;
+// 				right: 12px;
+// 				.background-image('images/overlay-mobile.png');
+// 				.block(14px, 14px);
+// 				z-index: 9;
+// 			}
+// 		}
+// 	}
+// }

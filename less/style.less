@@ -1,0 +1,198 @@
+/*   
+Theme Name: Jordi's Theme
+Theme URI: *
+Author: Jordi Tost
+Author URI: *
+Version: 1.0
+*/
+
+// Main Framework 
+@import "reset";
+@import "common-vars";
+@import "common";
+
+// Theme specific
+@import "vars";
+@import "mixins";
+
+/* Ok, this is where the fun starts.
+-------------------------------------------------------------------------------*/
+
+body {
+	font: 13px Helmet, Freesans, sans-serif;
+	line-height: 1.4;
+}
+
+html, body {
+    -webkit-text-size-adjust: 100% !important; /* Prevent font scaling in landscape */
+}
+
+// Webkit smoothing
+// http://www.icondeposit.com/blog:how-to-properly-smooth-font-using-css3
+//html, html a {
+* {
+	-webkit-font-smoothing: antialiased !important; 
+}
+
+body, select, input, textarea {color: @text-color;}
+
+a {
+	color: @link-color; 
+	text-decoration: none;
+
+	outline: none;
+	border: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+
+	&:active, &:focus, &:hover {
+		border: none;
+		outline: none;
+	}
+
+	.transition(all, 0.1s, ease);
+}
+
+p {
+	margin-bottom: 5px;
+}
+
+::-moz-selection{background: @sel-color; color: #fff; text-shadow: none;}
+::selection {background: @sel-color; color: #fff; text-shadow: none;}
+
+// /*	j.mp/webkit-tap-highlight-color */
+a:link {-webkit-tap-highlight-color: @tap-color;}
+
+ins {background-color: #fcd700; color: #000; text-decoration: none;}
+mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: bold;}
+
+
+/////////////
+// Headers
+/////////////
+
+h1, h2, h3, h4, h5, h6 {
+	// font-family: @bebas;
+	// text-transform: uppercase;
+	// font-weight: 100;
+	.optimize-text();
+}
+
+
+//////////////////
+// Main Classes
+//////////////////
+
+.inside {
+	.inside-block(@wrap-width);
+}
+
+.more-link {
+
+}
+
+// Backgrounds
+// Separators
+// Text classes
+
+/////////////
+// HEADER
+/////////////
+
+#header {
+	
+	.inside {
+		padding:45px 0 30px;
+	}
+}
+
+#logo {
+	.background-image('images/logo.png');
+	.block(137px, 24px);
+	text-indent: -9999px;
+}
+
+#nav {
+	position: absolute;
+	bottom:24px;
+	right:0;
+}
+
+// Main Nav
+
+.nav-menu {
+
+	// ul { 
+	// 	font-size:0; // removes space created by inline-block
+	// }
+
+	li {
+		margin-left:15px;
+		text-align:right;
+		
+		.inline-block();
+
+		&:first-child {
+			margin-left:0;
+		}
+
+		// Text styles
+		a {
+			padding:5px 0;
+			display: block;
+			.optimize-text();
+		}
+
+		// Active / hover styles
+		&.active > a, 
+		&.current-menu-item > a,
+		&.current-cat > a,
+		a:hover {
+
+			// current item styles
+		}
+	}
+}
+
+/////////////////////
+// MAIN STRUCTURE
+/////////////////////
+
+#content {
+	float: left;
+	display: block;
+	width: @content-width;
+	margin-right: @content-margin;
+}
+
+#sidebar {
+	float: left;
+	display: block;
+	width: @sidebar-width;
+}
+
+/////////////
+// FOOTER
+/////////////
+
+#footer {
+
+}
+
+#footer-nav {
+	
+}
+
+///////////////////
+// Sticky Footer
+///////////////////
+
+//.sticky-footer(@footer-height);
+
+///////////////////
+// Media Queries
+///////////////////
+
+//@import "media-queries";
