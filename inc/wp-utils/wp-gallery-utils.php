@@ -8,24 +8,6 @@
  * @version    2.2
  *
  * @Developer Jordi Tost (Follow Me: @jorditost)
- *
- * 	 20.07.2012
- *	 ==========
- * - Get gallery by post ID
- * - Remove hard coded dimensions from post thumbnail
- *
- * 	 01.06.2013
- *	 ==========
- * - Add compatibility with 'MultiPostThumbnails' plugin
- *
- * 	 12.07.2013
- *	 ==========
- * - Has post gallery
- *
- * 	 02.09.2013
- *	 ==========
- * - Change functions names (the_post_gallery_custom, get_post_gallery_custom, has_post_gallery_custom) because of incompatibility with Wordpress 3.6
- *
  */
 
 function the_post_gallery_custom( $size = 'large', $show_videos = false, $tag = 'li', $exclude_thumb = true, $more_attr = '', $max_images = -1 ) {

@@ -23,7 +23,7 @@ function custom_types_register() {
 
 	$post_name = 'team';
 		
-	// ! CUSTOM TAXONOMY: Places Child Type
+	// CUSTOM TAXONOMY: Places Child Type
 	
 	$labels = array(
 		'name' 							=> _x( 'Categories', 'taxonomy general name' ),
@@ -52,6 +52,7 @@ function custom_types_register() {
 	    'rewrite'                       => array( 'slug' => 'about/team'/*, 'with_front' => false*/ )
 	    //'query_var'                     => true
 	);
+
 	register_taxonomy( 'team-category', $post_name, $args );
 	
 	// Adding qTranslate to taxonomy editor
@@ -126,27 +127,6 @@ function custom_types_register() {
 add_action( 'init', 'custom_types_register' );
 
 
-/////////////////////
-// Connection Types
-/////////////////////
-
-// Posts 2 Posts plugin: 
-// https://github.com/scribu/wp-posts-to-posts/
-// https://github.com/scribu/wp-posts-to-posts/wiki
-
-/*if (function_exists('p2p_register_connection_type')) {
-	
-	function my_connection_types() {
-		p2p_register_connection_type( array(
-			'name' => 'posts_to_pages',
-			'from' => 'service',
-			'to' => 'case'
-		) );
-	}
-	add_action( 'p2p_init', 'my_connection_types' );
-}*/
-
-
 /////////////////
 // Flush Rules
 /////////////////
@@ -165,6 +145,27 @@ function custom_plugin_deactivation() {
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'custom_plugin_deactivation');
+
+
+//////////////////////
+// Connection Types
+//////////////////////
+
+// Posts 2 Posts plugin: 
+// https://github.com/scribu/wp-posts-to-posts/
+// https://github.com/scribu/wp-posts-to-posts/wiki
+
+/*if (function_exists('p2p_register_connection_type')) {
+	
+	function my_connection_types() {
+		p2p_register_connection_type( array(
+			'name' => 'posts_to_pages',
+			'from' => 'service',
+			'to' => 'case'
+		) );
+	}
+	add_action( 'p2p_init', 'my_connection_types' );
+}*/
 
 
 ///////////////////
@@ -195,26 +196,6 @@ function custom_team_link( $post_link, $id = 0 ) {
 add_filter( 'post_type_link', 'custom_team_link' , 10, 2 );*/
 
 
-////////////////////
-// Register Utils
-////////////////////
-
-function get_custom_post_type_labels($post_name, $singular_name, $plural_name) {
-
-	return array(
-				'name' 					=> __( $plural_name ),
-				'singular_name'			=> __( $singular_name ),
-				'add_new'				=> _x('Add New', $post_name),
-				'add_new_item' 			=> __('Add New '.$singular_name),
-				'edit_item' 			=> __('Edit '.$singular_name),
-				'new_item' 				=> __('New '.$singular_name),
-				'view_item' 			=> __('View '.$singular_name),
-				'search_items' 			=> __('Search '.$singular_name),
-				'not_found' 			=> __('No '.strtolower($singular_name).' found'),
-				'not_found_in_trash' 	=> __('No '.strtolower($singular_name).' found in Trash')
-			);
-}
-
 /////////////////////
 // Admin Functions
 /////////////////////
@@ -237,7 +218,14 @@ function get_custom_post_type_labels($post_name, $singular_name, $plural_name) {
 }
 add_action( 'admin_menu', 'change_post_menu_label' );*/
 
-// Add "Case Category" column on posts list
+// Translate Custom Taxonomy
+if (function_exists('qtrans_getLanguage')) {
+// "customtag" is the name declared in register_taxonomy();
+// add_action('customtag_add_form', 'qtrans_modifyTermFormFor');
+// add_action('customtag_edit_form', 'qtrans_modifyTermFormFor');
+}
+
+// Add custon taxonomy column on posts list
 /*function cases_change_columns($defaults) {
     $defaults['thinkmoto_casescategory'] = 'Case Categories';
     return $defaults;
@@ -259,7 +247,6 @@ function cases_custom_column($column_name, $post_id) {
     }
     else echo '<i>No terms.</i>';
 }
-
 add_filter( 'manage_thinkmoto_case_posts_columns', 'cases_change_columns' );
 add_action('manage_thinkmoto_case_posts_custom_column', 'cases_custom_column', 10, 2);*/
 	
@@ -312,24 +299,10 @@ function taxonomy_filter_post_type_request( $query ) {
 }
 add_filter( 'parse_query', 'taxonomy_filter_post_type_request' );
 
-// Function that changes menu labels
 
-/*function change_post_menu_label() {
-    global $menu;
-    global $submenu;
-
-    $menu[][0] = 'Produkte';
-    $submenu['edit.php'][5][0] = 'Alle Produkte';
-    //$submenu['edit.php'][10][0] = 'Add Contacts';
-    $submenu['edit.php'][15][0] = 'Kollektionen'; 	// Change name for categories
-    //$submenu['edit.php'][16][0] = 'Labels'; 		// Change name for tags
-    echo '';
-}
-add_action( 'admin_menu', 'change_post_menu_label' );*/
-
-// ========================== 
-// ! CUSTOM FIELD Functions   
-// ========================== 
+////////////////////////////
+// CUSTOM FIELD Functions   
+////////////////////////////
 
 /*add_action('admin_init', 'add_custom_boxes');
 add_action('save_post', 'save_custom_postdata');
@@ -467,45 +440,26 @@ function thinkmoto_case_details_meta_box() {
 		</p>
 	<?php
 }
+*/
 
-// Jobs meta box
-function thinkmoto_job_details_meta_box() {
 
-    global $post;
-    $custom = get_post_custom($post->ID);  
-	?>
-		<p>
-			<label><? _e("Level"); ?>:</label><br />
-			<input name="thinkmoto_job_level" value="<?php echo $custom["thinkmoto_job_level"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Level - <em>Englisch</em>"); ?>:</label><br />
-			<input name="thinkmoto_job_level_en" value="<?php echo $custom["thinkmoto_job_level_en"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Anstellung"); ?>:</label><br />
-			<input name="thinkmoto_job_employment" value="<?php echo $custom["thinkmoto_job_employment"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Anstellung - <em>Englisch</em>"); ?>:</label><br />
-			<input name="thinkmoto_job_employment_en" value="<?php echo $custom["thinkmoto_job_employment_en"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Dauer"); ?>:</label><br />
-			<input name="thinkmoto_job_duration" value="<?php echo $custom["thinkmoto_job_duration"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Dauer - <em>Englisch</em>"); ?>:</label><br />
-			<input name="thinkmoto_job_duration_en" value="<?php echo $custom["thinkmoto_job_duration_en"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Beginn"); ?>:</label><br />
-			<input name="thinkmoto_job_start" value="<?php echo $custom["thinkmoto_job_start"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-		<p>
-			<label><? _e("Beginn - <em>Englisch</em>"); ?>:</label><br />
-			<input name="thinkmoto_job_start_en" value="<?php echo $custom["thinkmoto_job_start_en"][0]; ?>" type="text" style="width:98%;" />
-		</p>
-	<?php
-}*/
+////////////////////
+// Register Utils
+////////////////////
+
+function get_custom_post_type_labels($post_name, $singular_name, $plural_name) {
+
+	return array(
+				'name' 					=> __( $plural_name ),
+				'singular_name'			=> __( $singular_name ),
+				'add_new'				=> _x('Add New', $post_name),
+				'add_new_item' 			=> __('Add New '.$singular_name),
+				'edit_item' 			=> __('Edit '.$singular_name),
+				'new_item' 				=> __('New '.$singular_name),
+				'view_item' 			=> __('View '.$singular_name),
+				'search_items' 			=> __('Search '.$singular_name),
+				'not_found' 			=> __('No '.strtolower($singular_name).' found'),
+				'not_found_in_trash' 	=> __('No '.strtolower($singular_name).' found in Trash')
+			);
+}
 ?>

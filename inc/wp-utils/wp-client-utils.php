@@ -11,15 +11,24 @@
  */
 
 
-// ======================= 
-// ! DASHBOARD Functions   
-// ======================= 
+//////////////////////////
+// UPDATE Notifications
+//////////////////////////
+
+// Remove WP update notifications
+function remove_wp_update_notifications() {
+    remove_action( 'admin_notices', 'update_nag', 3 );
+}
 
 add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_version_check' );" ), 2 );
 add_filter( 'pre_site_transient_update_core', create_function( '$a', "return null;" ) );
 
-// Remove all unnecessary widgets
 
+/////////////////////////
+// DASHBOARD Functions   
+/////////////////////////
+
+// Remove all unnecessary widgets
 add_action('wp_dashboard_setup', 'wpc_dashboard_widgets');
 function wpc_dashboard_widgets() {
 	global $wp_meta_boxes;
