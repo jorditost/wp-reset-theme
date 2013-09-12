@@ -16,10 +16,10 @@ Version: 1.0
 @import "mixins";
 
 /* Ok, this is where the fun starts.
--------------------------------------------------------------------------------*/
+---------------------------------------*/
 
 body {
-	font: 13px Helmet, Freesans, sans-serif;
+	font: 13px @font-reg;
 	line-height: 1.4;
 }
 
@@ -34,7 +34,9 @@ html, body {
 	-webkit-font-smoothing: antialiased !important; 
 }
 
-body, select, input, textarea {color: @text-color;}
+body, select, input, textarea { 
+	color: @text-color; 
+}
 
 a {
 	color: @link-color; 
@@ -44,7 +46,7 @@ a {
 	border: none;
 
 	&:hover {
-		text-decoration: underline;
+		color: @link-h-color;
 	}
 
 	&:active, &:focus, &:hover {
@@ -54,6 +56,12 @@ a {
 
 	.transition(all, 0.1s, ease);
 }
+
+// Bold fonts when using web-fonts
+// strong {
+// 	font-family: @font-bold;
+// 	font-weight: 100;
+// }
 
 p {
 	margin-bottom: 5px;
@@ -74,8 +82,6 @@ mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: b
 /////////////
 
 h1, h2, h3, h4, h5, h6 {
-	// font-family: @bebas;
-	// text-transform: uppercase;
 	// font-weight: 100;
 	.optimize-text();
 }
@@ -93,35 +99,7 @@ h1, h2, h3, h4, h5, h6 {
 
 }
 
-// Backgrounds
-// Separators
-// Text classes
-
-/////////////
-// HEADER
-/////////////
-
-#header {
-	
-	.inside {
-		padding:45px 0 30px;
-	}
-}
-
-#logo {
-	.background-image('images/logo.png');
-	.block(137px, 24px);
-	text-indent: -9999px;
-}
-
-#nav {
-	position: absolute;
-	bottom:24px;
-	right:0;
-}
-
 // Main Nav
-
 .nav-menu {
 
 	// ul { 
@@ -154,6 +132,35 @@ h1, h2, h3, h4, h5, h6 {
 			// current item styles
 		}
 	}
+}
+
+// Backgrounds
+// Separators
+// Text classes
+
+
+/////////////
+// HEADER
+/////////////
+
+#header {
+	
+	.inside {
+		padding:45px 0 30px;
+	}
+}
+
+#logo {
+	//.background-image('images/logo.png');
+	//.background-image-devices('images/logo', 'png', 137px 24px);
+	//.block(137px, 24px);
+	//.no-text();
+}
+
+#nav {
+	position: absolute;
+	bottom:24px;
+	right:0;
 }
 
 /////////////////////

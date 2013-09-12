@@ -137,5 +137,5 @@
 			</div>
 		</div><!-- #header -->
 
-		<div id="main" class="inside">
+		<div id="main" class="inside group">
 
