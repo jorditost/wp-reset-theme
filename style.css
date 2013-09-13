@@ -362,9 +362,6 @@ h6 {
   display: block;
   text-rendering: optimizeLegibility;
 }
-#header .inside {
-  padding: 45px 0 30px;
-}
 #nav {
   position: absolute;
   bottom: 24px;
