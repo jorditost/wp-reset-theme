@@ -45,9 +45,14 @@ function mobile_class() {
 
     global $isMobile; 
     global $isIpad; 
+    global $isTablet; 
 
-    if ($isMobile || $isIpad || $isTablet) { 
+    if ($isMobile) { 
         echo " mobile"; 
+    }
+
+    if ($isIpad || $isTablet) { 
+        echo " tablet"; 
     }
 }
 
