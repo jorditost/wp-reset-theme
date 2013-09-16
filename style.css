@@ -245,11 +245,9 @@ button {
   -ms-interpolation-mode: bicubic;
 }
 :focus {
-  border: 0 !important;
   outline: 0 !important;
 }
 :active {
-  border: 0 !important;
   outline: 0 !important;
 }
 .group {
