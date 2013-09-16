@@ -9,6 +9,10 @@
  * @Developer Jordi Tost (Follow Me: @jorditost)
  *
  * Read: // http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-post-types-taxonomies/
+ *
+ * NOTE: This template script have some examples of how to register custom post types, taxonomies or custom fields.
+ *	     They are commented so as to use them as sample code. Please use them and delete what you don't need :-)
+ *		 To do: Build a function that does this work
  */
 
 ////////////////////////////////
@@ -17,11 +21,13 @@
 
 function custom_types_register() {
 	
+	/*
 	////////////
 	// TEAM
 	////////////
 
 	$post_name = 'team';
+	$taxonomy  = 'team-category'; 
 		
 	// CUSTOM TAXONOMY: Places Child Type
 	
@@ -49,19 +55,19 @@ function custom_types_register() {
 	    'show_ui'                       => true,
 	    'show_in_nav_menus'             => true,
 	    'args'                          => array( 'orderby' => 'term_order' ),
-	    'rewrite'                       => array( 'slug' => 'about/team'/*, 'with_front' => false*/ )
+	    'rewrite'                       => array( 'slug' => 'about/team' ) // array( 'slug' => 'about/team', 'with_front' => false )
 	    //'query_var'                     => true
 	);
 
-	register_taxonomy( 'team-category', $post_name, $args );
+	register_taxonomy( $taxonomy, $post_name, $args );
 	
 	// Adding qTranslate to taxonomy editor
-	add_action('team-category_add_form', 'qtrans_modifyTermFormFor');
-	add_action('team-category_edit_form', 'qtrans_modifyTermFormFor');
-
+	if (function_exists('qtrans_getLanguage')) {
+		add_action($taxonomy.'_add_form', 'qtrans_modifyTermFormFor');
+		add_action($taxonomy.'_edit_form', 'qtrans_modifyTermFormFor');
+	}
 	
 	// CUSTOM POST TYPE
-
 	$cpt_args = array(
 		'labels' 				=> get_custom_post_type_labels($post_name, 'Entry', 'Team'),
 		'description'       	=> '',
@@ -70,7 +76,7 @@ function custom_types_register() {
 	    'show_in_menu'          => true,
 	    'capability_type' 		=> 'page',
 	    'hierarchical'			=> false,
-	    'rewrite'               => array( 'slug' => 'about/team'/*, 'with_front' => false*/ ),
+	    'rewrite'               => array( 'slug' => 'about/team' ), // array( 'slug' => 'about/team', 'with_front' => false )
 	    'query_var' 			=> true,
 	    'has_archive'           => false,
 	    'supports'              => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' )	// 'title','editor','thumbnail','excerpt','custom-fields','page-attributes'
@@ -122,7 +128,7 @@ function custom_types_register() {
 	    'supports'              => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' )	// 'title','editor','thumbnail','excerpt','custom-fields','page-attributes'
 	);
 
-	register_post_type( $post_name, $cpt_args );
+	register_post_type( $post_name, $cpt_args );*/
 }
 add_action( 'init', 'custom_types_register' );
 
@@ -219,11 +225,12 @@ add_filter( 'post_type_link', 'custom_team_link' , 10, 2 );*/
 add_action( 'admin_menu', 'change_post_menu_label' );*/
 
 // Translate Custom Taxonomy
-if (function_exists('qtrans_getLanguage')) {
-// "customtag" is the name declared in register_taxonomy();
-// add_action('customtag_add_form', 'qtrans_modifyTermFormFor');
-// add_action('customtag_edit_form', 'qtrans_modifyTermFormFor');
-}
+// Use it after register your taxonomy
+/*if (function_exists('qtrans_getLanguage')) {
+	// "customtag" is the name declared in register_taxonomy();
+	//add_action('customtag_add_form', 'qtrans_modifyTermFormFor');
+	//add_action('customtag_edit_form', 'qtrans_modifyTermFormFor');
+}*/
 
 // Add custon taxonomy column on posts list
 /*function cases_change_columns($defaults) {
@@ -247,7 +254,7 @@ function cases_custom_column($column_name, $post_id) {
     }
     else echo '<i>No terms.</i>';
 }
-add_filter( 'manage_thinkmoto_case_posts_columns', 'cases_change_columns' );
+add_filter('manage_thinkmoto_case_posts_columns', 'cases_change_columns' );
 add_action('manage_thinkmoto_case_posts_custom_column', 'cases_custom_column', 10, 2);*/
 	
 
