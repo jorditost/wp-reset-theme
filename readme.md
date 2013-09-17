@@ -2,7 +2,7 @@
 
 ## Summary
 
-The HTML5 Reset Wordpress theme is a blank theme based on the [HTML5 Reset Wordpress Theme](https://github.com/murtaugh/HTML5-Reset-Wordpress-Theme) and the [HTML5 Reset templates](https://github.com/murtaugh/HTML5-Reset). 
+The HTML5 Reset Wordpress theme is a blank theme based on the [HTML5 Reset templates](https://github.com/murtaugh/HTML5-Reset-Wordpress-Theme) and the [HTML5 Reset templates](https://github.com/murtaugh/HTML5-Reset). 
 
 ### Features
 
@@ -19,9 +19,14 @@ The HTML5 Reset Wordpress theme is a blank theme based on the [HTML5 Reset Wordp
 
 ### External plugins
 
+#### Required plugins (if your theme uses them)
+
 1. [qTranslate](http://wordpress.org/plugins/qtranslate/) for multilanguage sites
 2. [Multiple Post Thumbnails](http://wordpress.org/plugins/multiple-post-thumbnails/) for multiple thumbnails
 3. [Posts 2 Posts](http://wordpress.org/plugins/posts-to-posts/) for creating connections between posts
 4. [Next Page, Not Next Post](http://wordpress.org/plugins/next-page-not-next-post/) for navigation between sibling pages
 
-This plugins are only required if the theme makes use of them.
+#### Other recommended plugins
+
+1. [Intuitive Custom Post Order](http://wordpress.org/plugins/intuitive-custom-post-order/) to order items using drag & drop
+2. [Hierarchy](http://wordpress.org/plugins/hierarchy/) to structure your site's Pages, Posts and Custom Post Types in your Dashboard

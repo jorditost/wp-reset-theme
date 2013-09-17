@@ -21,6 +21,7 @@ require_once('inc/utils/Mobile_Detect.php');
 require_once('inc/wp-utils/wp-utils.php');
 require_once('inc/wp-utils/wp-language-utils.php');
 require_once('inc/wp-utils/wp-gallery-utils.php');
+require_once('inc/wp-utils/wp-client-utils.php');
 require_once('inc/custom-post-types.php');
 
 
