@@ -4,65 +4,39 @@
  *
  * @copyright  Copyright © 2011-2012 Jordi Tost
  * @license    http://www.opensource.org/licenses/gpl-2.0.php GNU GPL version 2
- * @version    1.3.2
+ * @version    2.0
  *
  * @Developer Jordi Tost (Follow Me: @jorditost)
- *
- * 23.10.2012 - Get content for a given post page
- * 			  - Add 'the_content_split' filter manually
- *			  - Twitter function
- *
- * 20.07.2012 - Split page content added
- * 02.12.2012 - New functions for pages (get_page_resume_by_slug, permalink and more text)
- * 03.12.2012 - Twitter Utils in a separate file
- * 				the_split_content();
- * 11.12.2012 - wp_custom_nav_menu()
- * 17.12.2012 - Add 'check_section' action
- * 08.01.2013 - wp_list_custom_posts()
- * 09.01.2013 - has_content()
- * 18.01.2013 - 'check_section' updated to get section in a taxonomy archive page
- * 29.01.2013 - Bug in 'get_content_page' fixed
- * 12.02.2013 - 'wp_list_post_types' for hierarchical list of posts from a given custom post type 
- *				(fixes bug in 'wp_list_pages' marking custom post as active)
- * 14.02.2013 - New function 'the_contact_content' and filter 'parse_contact_content' that
- *				add icons to the contact page
- * 28.02.2013 - 'get_page_ID_by_path' accepts custom post types
- * 12.02.2013 - 'content_split_pages' has default value for $num_pages
- *			  - 'get_sidebar_page'
- * 26.05.2013 - Remove 'custom_menu_order' (now in custom-post-types.php)
- * 30.05.2013 - Add 'clear_br_tags'
- * 11.06.2013 - Add 'get_first_term'
- * 16.06.2013 - Conditional Tags Functions - is_index()
- * 18.06.2013 - Convert URLs in a text to Links
- * 30.06.2013 - 'the_content_split' as function (not filter)
- * 08.07.2013 - 'get_first_term_object' added
- * 05.09.2013 - 'get_content_pages_count' added
- * 08.09.2013 - 'the_content_split' bug fixed
  */
 
+/////////////////////
+// DEBUG Functions   
+/////////////////////
 
-// ==================
-// ! LOOP Functions
-// ==================
-
-if ( !function_exists( 'get_the_slug' ) ) { 
-		
-	function get_the_slug() {
-		global $post;
-		return $post->post_name;
-	}	
+function print_query() {
+    global $wp_query;
+    wp_debug($wp_query);
 }
 
-if ( !function_exists( 'the_slug' ) ) { 
-		
-	function the_slug() {
-		echo get_the_slug();
-	}	
+function wp_debug($variable,$die=false){
+    echo '<pre>'.print_r($variable, true).'</pre>';
+    if($die) die();
 }
 
-// ==============================
-// ! CONDITIONAL TAGS Functions
-// ==============================
+add_filter( 'template_include', 'var_template_include', 1000 );
+function var_template_include( $t ){
+    $GLOBALS['current_theme_template'] = basename($t);
+    return $t;
+}
+
+
+////////////////////////
+// Template Functions   
+////////////////////////
+
+function get_include_part($file_name) {
+    include (TEMPLATEPATH . '/inc/' . $file_name . '.php' );
+}
 
 function get_current_template( $echo = false ) {
 
@@ -74,6 +48,11 @@ function get_current_template( $echo = false ) {
         return $GLOBALS['current_theme_template'];
 }
 
+
+////////////////////////////////
+// CONDITIONAL TAGS Functions
+////////////////////////////////
+
 if (!function_exists('is_index')) {
 
 	function is_index() {
@@ -81,38 +60,28 @@ if (!function_exists('is_index')) {
 	}
 }
 
-// ======================
-// ! CATEGORY Functions
-// ======================
 
-function get_category_ID_by_slug( $slug ) {
-	$cat = get_category_by_slug( $slug );
-	if ($cat) return $cat->term_id;
+////////////////////
+// LOOP Functions
+////////////////////
+
+if ( !function_exists('get_the_slug') ) { 	
+	function get_the_slug() {
+		global $post;
+		return $post->post_name;
+	}	
 }
 
-function get_link_category_ID_by_slug( $slug ) {
-	$cat = get_term_by('slug', $slug, 'link_category');	
-	if ($cat) return $cat->term_taxonomy_id;
+if ( !function_exists('the_slug') ) { 
+	function the_slug() {
+		echo get_the_slug();
+	}	
 }
 
-// =====================
-// ! CONTENT Functions  
-// =====================
 
-function get_the_content_with_formatting ($more_link_text = '(more…)', $stripteaser = 0, $more_file = '') {
-	$content = get_the_content($more_link_text, $stripteaser, $more_file);
-	$content = apply_filters('the_content', $content);
-	$content = str_replace(']]>', ']]&gt;', $content);
-	return $content;
-}
-
-// Function that formats content like 'the_content'
-function format_content( $content ) {
-
-	$content = apply_filters('the_content', $content);
-	$content = str_replace(']]>', ']]&gt;', $content);
-	return $content;
-}
+/////////////////////
+// TITLE Functions
+/////////////////////
 
 // Function that removes "Private" in private posts
 function the_title_trim( $title ) {
@@ -140,6 +109,26 @@ function the_title_trim( $title ) {
 add_filter('the_title', 'the_title_trim');
 
 
+///////////////////////
+// CONTENT Functions  
+////////////////////////
+
+function get_the_content_with_formatting ($more_link_text = '(more…)', $stripteaser = 0, $more_file = '') {
+	$content = get_the_content($more_link_text, $stripteaser, $more_file);
+	$content = apply_filters('the_content', $content);
+	$content = str_replace(']]>', ']]&gt;', $content);
+	return $content;
+}
+
+// Function that formats content like 'the_content'
+function format_content( $content ) {
+
+	$content = apply_filters('the_content', $content);
+	$content = str_replace(']]>', ']]&gt;', $content);
+	return $content;
+}
+
+// Get content with a maximum number of chars
 function the_content_limit( $max_char, $more_link_text = "", $stripteaser = 0, $more_file = '' ) {
 	
     $content = get_the_content($more_link_text, $stripteaser, $more_file);
@@ -185,45 +174,6 @@ function the_contact_content() {
 	the_content();
 }
 
-function the_excerpt_limit( $max_char ) {
-
-    $content = get_the_excerpt();
-    $content = apply_filters('the_content', $content);
-    $content = str_replace(']]>', ']]', $content);
-    $content = strip_tags($content);
- 
-	if ((strlen($content)>$max_char) && ($espacio = strpos($content, " ", $max_char ))) {
-		$content = substr($content, 0, $espacio);
-
-		echo $content . '…';
-	}
-	else {
-		echo $content;
-		
-		if ( strlen($content)>$max_char && $more_link_text != "" ) {		  
-			echo '…';
-		}
-	}
-}
-
-function get_manual_excerpt() {
-	global $post;
-	return ( has_excerpt() ) ? get_the_excerpt() : '';
-}
-
-function the_manual_excerpt($apply_filters = true) {
-	
-	$content = get_manual_excerpt();
-	
-	if ($apply_filters) {
-		//$content = get_the_excerpt();
-	    $content = apply_filters('the_content', $content);
-	    $content = str_replace(']]>', ']]', $content);
-    }
-    
-	echo $content;
-}
-
 // Remove empty paragraphs from content
 function remove_empty_paragraphs($content) {
 
@@ -250,50 +200,15 @@ function page_has_content() {
 	//If you want to get rid of the extra space at the start of the line:
 	//$content = preg_replace("/^ +/", "", $content);
 	
-	//wp_debug($content);
-	
 	return ( !empty($content) || has_post_thumbnail() );
 }
 
-// Function that changes all <br> tags in a content for a span element
-function clear_br_tags($content) {
-	$content = str_ireplace('<br />', '<span class="sep"></span>', $content);
-	return $content;
-}
 
-// =====================
-// ! Paginated Content
-// =====================
+///////////////////////
+// Paginated Content
+///////////////////////
 
-// Using this function in the loop, returns the content split
-// function the_split_content() {
-
-// 	global $post;
-// 	echo format_content(the_content_split());
-// }
-
-// This function is a filter that splits content by using the_content()
-/*function the_content_split($content) {
-	
-	global $pages;
-	
-	if (count($pages) > 1) $content = content_split_pages();
-	
-	return $content;
-}*/
-//add_filter('the_content', 'the_content_split', 1);
-
-function the_content_split($class = 'block') {
-
-	global $pages;
-	
-	// if (count($pages) > 1) $content = content_split_pages($class);
-	// echo $content;
-
-	echo content_split_pages($class);
-}
-
-function content_split_pages($class = 'block', $num_columns = 3) {
+function get_the_content_split($class = 'block') {
 	
 	global $pages;
 	
@@ -305,14 +220,25 @@ function content_split_pages($class = 'block', $num_columns = 3) {
 		// Apply content formatting		
 		$content = apply_filters('the_content', $pages[$i]);
 		$content = str_replace(']]>', ']]>', $content);
-		
-		//$class = (($i+1)%$num_columns == 0) ? $class.' last' : $class;
         
         $result .= '<div class="'.$class.'">'.$content.'</div>';
     }
 	
 	return $result;
 }
+
+function the_content_split($class = 'block') {
+
+	echo get_the_content_split($class);
+}
+
+// This function is a filter that splits content by using the_content()
+function the_content_split_filter($content) {
+	global $pages;
+	if (count($pages) > 1) $content = get_the_content_split();
+	return $content;
+}
+//add_filter('the_content', 'the_content_split_filter', 1);
 
 function get_content_pages_count() {
 	global $pages;
@@ -340,7 +266,7 @@ function get_content_page($pagenum) {
     $content = $pages[$pagenum-1];
 
     // Remove split content filter
-    remove_filter('the_content', 'the_content_split', 1);
+    remove_filter('the_content', 'the_content_split_filter', 1);
 
     // Apply content formatting
     $content = apply_filters('the_content', $content);
@@ -350,104 +276,70 @@ function get_content_page($pagenum) {
 }
 
 // TEXT EDITOR - Add Next Page button on Tiny MCE editor
-add_filter('mce_buttons','wysiwyg_editor');
 function wysiwyg_editor($mce_buttons) {
 	$mce_buttons = array('bold', 'italic', '|', 'bullist', 'numlist', 'blockquote', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'link', 'unlink', '|', 'spellchecker', 'fullscreen', 'wp_adv', '|', 'wp_page');
 	return $mce_buttons;
 }
+add_filter('mce_buttons','wysiwyg_editor');
 
-// ==========================
-// ! Custom Field Functions
-// ==========================
 
-function get_post_custom_field_by_id($post_id, $custom_field, $end = '') {
-	$meta = get_post_meta($post_id, $custom_field, true);
-	return (( !empty($meta) ) ? $meta . $end : $meta);
-}
+///////////////////////
+// EXCERPT Functions
+///////////////////////
 
-function get_post_custom_field( $custom_field, $end = '') {
+function get_manual_excerpt() {
 	global $post;
-	$meta = get_post_meta($post->ID, $custom_field, true);
-	//$meta = get_post_meta(get_the_ID(), $custom_field, true);
-	return (( !empty($meta) ) ? $meta . $end : $meta);
+	return ( has_excerpt() ) ? get_the_excerpt() : '';
 }
 
-/* Jobs */
-
-function get_post_meta_dt( $post_id, $property_name, $title ) {
+function the_manual_excerpt($apply_filters = true) {
 	
-	$value =  get_post_meta($post_id, 'thinkmoto_job_' . $property_name, true);
-	if ( !empty($value) ) echo '<dt>' . $title . ':</dt><dd>' . $value . '</dd>';
+	$content = get_manual_excerpt();
+	
+	if ($apply_filters) {
+	    $content = apply_filters('the_content', $content);
+	    $content = str_replace(']]>', ']]', $content);
+    }
+    
+	echo $content;
 }
 
-function get_post_details_list($post_id) {
+// Get the excerpt with a maximum number of chars
+function the_excerpt_limit( $max_char ) {
 
-	echo '<dl class="job-details group">';
-	get_post_meta_dt($post_id, 'level',		'Level');
-	get_post_meta_dt($post_id, 'employment',	'Anstellung');
-	get_post_meta_dt($post_id, 'duration',	'Dauer');
-	get_post_meta_dt($post_id, 'start',		'Beginn');
-	echo '</dl>';
-}
+    $content = get_the_excerpt();
+    $content = apply_filters('the_content', $content);
+    $content = str_replace(']]>', ']]', $content);
+    $content = strip_tags($content);
+ 
+	if ((strlen($content)>$max_char) && ($espacio = strpos($content, " ", $max_char ))) {
+		$content = substr($content, 0, $espacio);
 
-/**
-*	Get all custom fields attached to a page
-*/
-if ( !function_exists('get_custom_fields_array') ) {
-	function get_custom_fields_array()
-	{
-		global $post;
-		$custom_fields = get_post_custom($post->ID);
-		$hidden_field = '_';
+		echo $content . '…';
+	}
+	else {
+		echo $content;
 		
-		foreach( $custom_fields as $key => $value ){
-			if( !empty($value) ) {
-				$pos = strpos($key, $hidden_field);
-				if( $pos !== false && $pos == 0 ) {
-					unset($custom_fields[$key]);
-				}
-			}
+		if ( strlen($content)>$max_char && $more_link_text != "" ) {		  
+			echo '…';
 		}
-
-		return $custom_fields;
 	}
 }
 
-if ( !function_exists('get_custom_fields_def_list') ) {
 
-	function get_custom_fields_def_list($custom_field_labels, $list = 'ul')
-	{
-		$custom_fields = get_custom_fields_array();
+////////////////////////
+// CATEGORY Functions
+////////////////////////
 
-		$return = '';
-		
-		if ($list == 'ul') {
-			
-			foreach( $custom_field_labels as $key => $value ){
-				if( !empty($value) && !empty($custom_fields[$key][0])) {
-					$return .= '<li><strong>' . $value . ':</strong> ' . $custom_fields[$key][0] . '</li>';
-				}
-			}
-			$return = (!empty($return)) ? '<ul>' . $return . '</ul>' : '';
-		
-		} else {
-			
-			foreach( $custom_field_labels as $key => $value ){
-				if( !empty($value) && !empty($custom_fields[$key][0])) {
-					
-					$return .= '<dt>' . $value . ':</dt><dd>' . $custom_fields[$key][0] . '</dd>';
-				}
-			}
-			$return = (!empty($return)) ? '<dl>' . $return . '</dl>' : '';
-		}
-
-		return $return;
-	}
+function get_category_ID_by_slug( $slug ) {
+	$cat = get_category_by_slug( $slug );
+	if ($cat) return $cat->term_id;
 }
 
-// ==================
-// ! POST Functions   
-// ================== 
+function get_link_category_ID_by_slug( $slug ) {
+	$cat = get_term_by('slug', $slug, 'link_category');	
+	if ($cat) return $cat->term_taxonomy_id;
+}
 
 function get_first_category() {
 	
@@ -486,28 +378,10 @@ function the_first_term($taxonomy) {
 	echo get_first_term($taxonomy);
 }
 
-/*function the_location_plain() {
 
-    echo get_location_plain();
-}
-
-function get_location_plain() {
-
-    global $post;
-
-    $terms = get_the_terms( $post->ID, 'location' );
-    if( $terms ) {
-        $term_slugs = array_map('esc_attr', wp_list_pluck( $terms, 'name'));
-        $return = implode(', ', $term_slugs);
-    }
-
-    return $return;
-}*/
-
-
-// ==================
-// ! PAGE Functions  
-// ==================
+////////////////////
+// PAGE Functions  
+////////////////////
 
 // Append page slug to body class
 function add_body_class( $classes ) {
@@ -519,6 +393,35 @@ function add_body_class( $classes ) {
 }
 add_filter( 'body_class', 'add_body_class' );
 
+function get_page_slug_by_ID($page_id) {
+
+	$page = get_page($page_id);
+
+	if ($page) return $page->post_name;
+    else       return null;
+}
+
+function get_page_ID_by_path($page_slug, $post_type = 'page') {
+
+    $page = get_page_by_path($page_slug, 'OBJECT', $post_type);
+    
+    if ($page) return $page->ID;
+    else       return null;
+}
+
+function get_page_ID_by_page_name($page_name) {
+   global $wpdb;
+   $page_name_id = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_name = '".$page_name."' AND post_type = 'page'");
+   return $page_name_id;
+}
+
+function get_page_link_by_slug($slug) {
+
+	$page = get_page_by_path($slug);
+	if (!$page) return "";
+
+	return get_permalink($page->ID);
+}
 
 function is_subpage( $page_id ) {
 
@@ -565,52 +468,41 @@ function is_subpage_of( $parent_slug ) {
 	return false;
 }
 
-function has_subpage() {
-	
-}
+function has_children($post_id = null, $post_type = null) {
 
-/*function is_subpage_of( $page_id, $parent_slug ) {
-	
-	if ( !$parent_slug ) return false;
-	
-	// get parent id
-	$parent_id = is_subpage($page_id);
-	
-	//echo "is subpage of: " . $parent_id;
-	
-	if ( $parent_id ) {		
-		return ($parent_id == get_page_ID_by_path($parent_slug));
+	if (is_null($post_id)) {
+		global $post;
+		$post_id = $post->ID;
 	}
-	
-	return false;
-}*/
 
-function get_page_slug_by_ID($page_id) {
+	if (is_null($post_type)) {
+		global $post;
+		$post_type = $post->post_type;
+	}
 
-	$page = get_page($page_id);
+    $children = get_pages("child_of=$post_id&post_type=$post_type");
 
-	if ($page) return $page->post_name;
-    else       return null;
+    return (count( $children ) != 0) ? true : false;
 }
 
-function get_page_ID_by_path($page_slug, $post_type = 'page') {
 
-    $page = get_page_by_path($page_slug, 'OBJECT', $post_type);
-    
-    if ($page) return $page->ID;
-    else       return null;
-}
+function get_page_content_by_path($path, $format_content = true, $more_text = '') {
 
-function get_ID_by_page_name($page_name) {
-   global $wpdb;
-   $page_name_id = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE post_name = '".$page_name."' AND post_type = 'page'");
-   return $page_name_id;
+	$query_page = get_page_by_path($path);
+	if (!$query_page) return "";
+
+	$return = ($format_content) ? format_content($query_page->post_content) : $query_page->post_content;
+
+	if (!empty($more_text)) {
+		$return .= '<a class="more-link" href="'. get_permalink($query_page->ID) . '">' . $more_text . '</a>';
+	}
+
+	return $return;
 }
 
 // This function returns formated content by slug. 
 // setup_postdata, makes it safer (when working with global $post) than "get_page_content_by_slug"
-
-function get_page_resume_by_slug($page_slug, $show_title = false, $more_text = '') {
+function get_page_resume_by_path($slug, $show_title = false, $more_text = '') {
     
 	// global $post;
 	// $post = get_page_by_path('beratung/herzlich-willkommen');
@@ -641,57 +533,77 @@ function get_page_resume_by_slug($page_slug, $show_title = false, $more_text = '
     return $return;
 }
 
-// Use "get_page_resume_by_slug" instead
 
-function get_page_content_by_slug($slug, $format_content = true, $more_text = '') {
-	$query_page = get_page_by_path($slug);
-	if (!$query_page) return "";
+////////////////////////////
+// CUSTOM FIELD Functions
+////////////////////////////
 
-	$return = ($format_content) ? format_content($query_page->post_content) : false;
-
-	if (!empty($more_text)) {
-		$return .= '<a class="more-link" href="'. get_permalink($query_page->ID) . '">' . $more_text . '</a>';
-	}
-
-	return $return;
+function get_post_custom_field_by_id($post_id, $custom_field) {
+	return get_post_meta($post_id, $custom_field, true);
 }
 
-function get_page_link_by_slug($slug) {
-
-	$page = get_page_by_path($slug);
-	if (!$page) return "";
-
-	return get_permalink($page->ID);
+function get_post_custom_field($custom_field) {
+	global $post;
+	return get_post_custom_field_by_id($post->ID, $custom_field);
 }
 
-/*function has_children($child_of = null) {
-    if(is_null($child_of)) {
-            global $post;
-            $child_of = ($post->post_parent != '0') ? $post->post_parent : $post->ID;
-    }
-    return (wp_list_pages("child_of=$child_of&echo=0")) ? true : false;
-}*/
-
-function has_children($post_id = null, $post_type = null) {
-
-	if (is_null($post_id)) {
+// Get an array with all custom fields attached to a page
+if ( !function_exists('get_custom_fields_array') ) {
+	
+	function get_custom_fields_array() {
 		global $post;
-		$post_id = $post->ID;
+		$custom_fields = get_post_custom($post->ID);
+		$hidden_field = '_';
+		
+		foreach( $custom_fields as $key => $value ){
+			if( !empty($value) ) {
+				$pos = strpos($key, $hidden_field);
+				if( $pos !== false && $pos == 0 ) {
+					unset($custom_fields[$key]);
+				}
+			}
+		}
+		return $custom_fields;
 	}
-
-	if (is_null($post_type)) {
-		global $post;
-		$post_type = $post->post_type;
-	}
-
-    $children = get_pages("child_of=$post_id&post_type=$post_type");
-
-    return (count( $children ) != 0) ? true : false;
 }
 
-// ================= 
-// ! SIDEBAR Utils   
-// ================= 
+// Show all custom fields attached to a page
+if ( !function_exists('get_custom_fields_def_list') ) {
+
+	function get_custom_fields_def_list($custom_field_labels, $list = 'ul') {
+
+		$custom_fields = get_custom_fields_array();
+
+		$return = '';
+		
+		if ($list == 'ul') {
+			
+			foreach( $custom_field_labels as $key => $value ){
+				if( !empty($value) && !empty($custom_fields[$key][0])) {
+					$return .= '<li><strong>' . $value . ':</strong> ' . $custom_fields[$key][0] . '</li>';
+				}
+			}
+			$return = (!empty($return)) ? '<ul>' . $return . '</ul>' : '';
+		
+		} else {
+			
+			foreach( $custom_field_labels as $key => $value ){
+				if( !empty($value) && !empty($custom_fields[$key][0])) {
+					
+					$return .= '<dt>' . $value . ':</dt><dd>' . $custom_fields[$key][0] . '</dd>';
+				}
+			}
+			$return = (!empty($return)) ? '<dl>' . $return . '</dl>' : '';
+		}
+
+		return $return;
+	}
+}
+
+
+///////////////////
+// SIDEBAR Utils   
+///////////////////
 
 function get_sidebar_page() {
 
@@ -715,7 +627,7 @@ function get_sidebar_page() {
         $sidebar_page = true;
         setup_postdata($post);
 ?>
-    <div class="page-widget post">
+    <div class="page-widget">
         <?php the_content(); ?>
     </div>
 <?php
@@ -726,9 +638,9 @@ function get_sidebar_page() {
 }
 
 
-// ============== 
-// ! MENU Utils   
-// ============== 
+////////////////
+// MENU Utils   
+////////////////
 
 // Change menu items ID adding related page slug
 
@@ -746,7 +658,6 @@ function my_wp_nav_menu_args( $args = '' )
 } // function
 
 add_filter( 'wp_nav_menu_args', 'my_wp_nav_menu_args' );
-
 
 // Custom navigation menu
 function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false) {
@@ -790,10 +701,14 @@ function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false
 	}
 }
 
+
+////////////////
+// LIST Utils   
+////////////////
+
 // Function that lists pages from the same Custom Post Type
 // For hierarchical structure see next function 'wp_list_post_types'
 function wp_list_custom_posts( $args = '', $exclude_current = false) {
-
 
     global $post;
     $post_ID = $post->ID;
@@ -809,9 +724,9 @@ function wp_list_custom_posts( $args = '', $exclude_current = false) {
         'posts_per_page'    => -1,
         // 'tax_query'     => array(            					// custom taxonomy
         //         array(
-        //             'taxonomy' => 'cpt_leistung_category',
+        //             'taxonomy' => 'taxonomy_id',
         //             'field'    => 'slug',
-        //             'terms' => $leistung_category
+        //             'terms' 	  => 'term_id'
         //         )
         //     ),
         'post_parent'       => 0,                   				// only top pages
@@ -903,9 +818,10 @@ function wp_list_post_types( $args ) {
         return $output;
 }
 
-// ===================== 
-// ! Section Utils   
-// =====================
+
+///////////////////
+// SECTION Utils   
+///////////////////
 
 // Function that saves in a global variable the current section of a page by its top level page
 function check_section() {
@@ -977,14 +893,11 @@ function check_section() {
 //add_action('wp_head', 'check_section');
 
 
-// ================
-// ! STRING Utils   
-// ================ 
+//////////////////
+// STRING Utils   
+//////////////////
 
 function get_relative_url( $permalink ) {
-	
-	//$siteurl = get_bloginfo('siteurl');
-	//return str_replace($siteurl, '', $permalink);
 
 	$siteurl = get_bloginfo('siteurl') . "/";
 	return rtrim( str_replace($siteurl, '', $permalink), "/");
@@ -1012,18 +925,24 @@ function format_text_links($text) {
 }
 
 // Replace single <br> for a <span> tag
-function nls2span($str)
-{
+function nls2span($str) {
+
   return str_replace('<span></span>', '', '<span>' 
         . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</span>$0<span>', $str) 
         . '</span>');
 }
 
 // Replace single <br> for a <p> tag
-function nls2p($str)
-{
+function nls2p($str) {
+
   return str_replace('<p></p>', '', '<p>' 
         . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</p>$0<p>', $str) 
         . '</p>');
+}
+
+// Function that changes all <br> tags in a content for a span element
+function clear_br_tags($content) {
+	$content = str_ireplace('<br />', '<span class="sep"></span>', $content);
+	return $content;
 }
 ?>

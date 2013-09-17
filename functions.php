@@ -6,27 +6,28 @@
  * @license    http://www.opensource.org/licenses/gpl-2.0.php GNU GPL version 2
  * @version    2.0
  *
- *
  * @Developer Jordi Tost (Follow Me: @jorditost)
  *
- * 02.07.2013 - Added jQuery in footer variable
- *              Global variable for site strings (for jQuery)
- *              More advanced clean wp_head
- *
- * Note: PHP vars are lowercase.
- *       Vars that are passed to jQuery are camelcase.   
+ * Notes: PHP vars are lowercase.
+ *        Vars that are passed to jQuery are camelcase.   
  */
 
 
-// ================ 
-// ! Custom Utils   
-// ================ 
+//////////////////
+// Custom Utils   
+////////////////// 
 
 require_once('inc/utils/Mobile_Detect.php');
 require_once('inc/wp-utils/wp-utils.php');
-//require_once('inc/wp-utils/wp-language-utils.php');
+require_once('inc/wp-utils/wp-language-utils.php');
 require_once('inc/wp-utils/wp-gallery-utils.php');
+require_once('inc/wp-utils/wp-client-utils.php');
 require_once('inc/custom-post-types.php');
+
+
+/////////////////////
+// Inits & Globals
+/////////////////////
 
 // Mobile detection
 global $detect;
@@ -41,6 +42,21 @@ $isIpad   = ( $detect->isIpad() )   ? true : false;
 $isTablet = ( $detect->isTablet() ) ? true : false;
 $isIE     = ( $detect->isIE() )     ? true : false;
 
+function mobile_class() {
+
+    global $isMobile; 
+    global $isIpad; 
+    global $isTablet; 
+
+    if ($isMobile) { 
+        echo " mobile"; 
+    }
+
+    if ($isIpad || $isTablet) { 
+        echo " tablet"; 
+    }
+}
+
 // Load jQuery in Footer
 global $load_jquery_in_footer;
 $load_jquery_in_footer = true;
@@ -49,63 +65,47 @@ $load_jquery_in_footer = true;
 global $test;
 $test = true;
 
-function mobile_class() {
 
-    global $isMobile; 
-    global $isIpad; 
+////////////////////////
+// Language Functions   
+////////////////////////
 
-    if ($isMobile || $isIpad || $isTablet) { 
-        echo " mobile"; 
+global $sitetrings;
+$siteStrings = array(
+        // Usage: 'text_id' => __('[:en]Text in English[:de]Text auf Deutsch')
+    );
+
+function get_site_text($text_id) {
+    global $siteStrings;
+    return $siteStrings[$text_id];
+}
+
+function get_language_code() {
+    if (function_exists('qtrans_getLanguage')) {
+        return qtrans_getLanguage();
     }
+    return '';
 }
 
-// ====================== 
-// ! BACKEND Functions   
-// ======================
+// Get a custom field for the current language
+function get_post_custom_field_lang($custom_field) {
+    $lang = get_language_code();
+    $lang_ext = (!empty($lang)) ? '_' . $lang : '';
 
-function print_query() {
-    global $wp_query;
-    wp_debug($wp_query);
+    return get_post_custom_field($custom_field . $lang_ext);
 }
 
-function wp_debug($variable,$die=false){
-    echo '<pre>'.print_r($variable, true).'</pre>';
-    if($die) die();
-}
 
-add_filter( 'template_include', 'var_template_include', 1000 );
-function var_template_include( $t ){
-    $GLOBALS['current_theme_template'] = basename($t);
-    return $t;
-}
-
-function get_include_part($file_name) {
-    include (TEMPLATEPATH . '/inc/' . $file_name . '.php' );
-}
-
-// ====================== 
-// ! Language Functions   
-// ======================
-
-// global $sitetrings;
-// $siteStrings = array(
-//         'see_all_activities' => __('[:en]See all activities[:de]Komplettes Programm sehen'),
-//         'loading_activities' => __('[:en]Loading activities...[:de]Das Programm wird geladen...'),
-//         'loading_error'      => __('[:en]A loading error occurred. Please try again later.[:de]Beim Laden der Seite ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.'),
-//         'find_out_more'      => __('[:en]Find out more[:de]Mehr erfahren'),
-//         'register'           => __('[:en]Register here[:de]Hier registrieren'),
-//         'close'              => __('[:en]Close[:de]Schliessen')
-//     );
+///////////////////////
+// Content Functions   
+///////////////////////
 
 
-// ===================== 
-// ! Content Functions   
-// =====================
 
 
-// ============================= 
-// ! Theme Admin Customization
-// =============================
+///////////////////////////////
+// Theme Admin Customization
+///////////////////////////////
 
 // Edit admin menus
 // http://wp.tutsplus.com/tutorials/creative-coding/customizing-your-wordpress-admin/
@@ -117,7 +117,7 @@ function edit_admin_menus() {
     //$menu[5][0] = 'Blog';
 
     // Remove menus
-    //remove_menu_page('edit.php');           // Remove Posts
+    //remove_menu_page('edit.php');         // Remove Posts
     remove_menu_page('edit-comments.php');  // Remove Comments
     //remove_menu_page('link-manager.php'); // Remove Links
     //remove_menu_page('tools.php');
@@ -125,69 +125,65 @@ function edit_admin_menus() {
 add_action( 'admin_menu', 'edit_admin_menus' );
 
 // Custom Menu Order
-// function custom_menu_order($menu_ord) {
-//     if (!$menu_ord) return true;
-//     return array(
-//         'index.php',                    // this represents the dashboard link
-//         //'edit.php',                   //the posts tab
-//         'edit.php?post_type=page',       //the pages tab
-//         //'edit.php?post_type=umfrage'   //the "umfrage" tab
-//     );
-// }
-// add_filter('custom_menu_order', 'custom_menu_order');
-// add_filter('menu_order', 'custom_menu_order');
+function custom_menu_order($menu_ord) {
+    if (!$menu_ord) return true;
+    return array(
+        'index.php',                    // this represents the dashboard link
+        //'edit.php',                   //the posts tab
+        'edit.php?post_type=page',       //the pages tab
+        //'edit.php?post_type=umfrage'   //the "umfrage" tab
+    );
+}
+//add_filter('custom_menu_order', 'custom_menu_order');
+//add_filter('menu_order', 'custom_menu_order');
 
 // Remove category from edit/add new post screen
-// function my_list_terms_exclusions( $exclusions, $args ) {
-//   global $pagenow;
-//   if (in_array($pagenow,array('post.php','post-new.php'))) {
-//     $exclusions = " {$exclusions} AND t.slug NOT IN ('twitter')";
-//   }
-//   return $exclusions;
-// }
-// add_filter('list_terms_exclusions', 'my_list_terms_exclusions', 10, 2);
+function my_list_terms_exclusions( $exclusions, $args ) {
+  global $pagenow;
+  if (in_array($pagenow,array('post.php','post-new.php'))) {
+    $exclusions = " {$exclusions} AND t.slug NOT IN ('twitter')";
+  }
+  return $exclusions;
+}
+//add_filter('list_terms_exclusions', 'my_list_terms_exclusions', 10, 2);
 
 // Remove admin bar
 add_filter('show_admin_bar', '__return_false');
 
-// ==================
-// ! Notifications
-// ==================
 
-// Remove WP update notifications
-// add_action('admin_menu','wphidenag');
-// function wphidenag() {
-//     remove_action( 'admin_notices', 'update_nag', 3 );
-// }
+///////////////////
+// Notifications
+///////////////////
+
+// Uncomment to remove WP Version update notifications
+//add_action('admin_menu','remove_wp_update_notifications');
 
 // Remove notifications for login plugins
-// function filter_plugin_updates( $value ) {
-//     unset( $value->response['akismet/akismet.php'] );
-//     unset( $value->response['wp-members/wp-members.php'] );
-//     return $value;
-// }
-// add_filter( 'site_transient_update_plugins', 'filter_plugin_updates' );
+function filter_plugin_updates( $value ) {
+    unset( $value->response['akismet/akismet.php'] );
+    return $value;
+}
+add_filter( 'site_transient_update_plugins', 'filter_plugin_updates' );
 
 // Avoid plugin deactivation
-// function disable_plugin_deactivation( $actions, $plugin_file, $plugin_data, $context ) {
-//     // Remove edit link for all
-//     if ( array_key_exists( 'edit', $actions ) )
-//         unset( $actions['edit'] );
-//     // Remove deactivate link for crucial plugins
-//     if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin_file, array(
-//         'theme-my-login/theme-my-login.php',
-//         'wp-members/wp-members.php',
-//         'wp-better-emails/wpbe.php'
-//     )))
+function disable_plugin_deactivation( $actions, $plugin_file, $plugin_data, $context ) {
+    // Remove edit link for all
+    if ( array_key_exists( 'edit', $actions ) )
+        unset( $actions['edit'] );
+    // Remove deactivate link for crucial plugins
+    if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin_file, array(
+        'plugin_folder/plugin_main_script.php'
+    )))
     
-//     unset( $actions['deactivate'] );
-//     return $actions;
-// }
-// add_filter( 'plugin_action_links', 'disable_plugin_deactivation', 10, 4 );
+    unset( $actions['deactivate'] );
+    return $actions;
+}
+//add_filter( 'plugin_action_links', 'disable_plugin_deactivation', 10, 4 );
 
-// ===============
-// ! Theme Setup   
-// ===============
+
+/////////////////
+// Theme Setup   
+/////////////////
 
 add_action( 'after_setup_theme', 'my_theme_setup' );
 
@@ -203,7 +199,7 @@ function my_theme_setup() {
     
     // Register extra featured images
     // http://wordpress.org/plugins/multiple-post-thumbnails/
-    /*if (class_exists('MultiPostThumbnails')) {
+    if (class_exists('MultiPostThumbnails')) {
         new MultiPostThumbnails(
             array(
                 'label' => 'Secondary Image',
@@ -214,21 +210,19 @@ function my_theme_setup() {
 
         // Array with all registered IDs for compatibility with wp-gallery-utils.php
         global $exclude_thumb_ids;
-        //$exclude_thumb_ids = array('secondary-image');
         $exclude_thumb_ids = array(
                 'post'      => array('secondary-image'),
                 'custom_pt' => array('secondary-image-cpt')
             );
-    }*/
+    }
 
     // Images size
-    /*if ( function_exists( 'add_image_size' ) ) { 
+    if ( function_exists( 'add_image_size' ) ) { 
         
-        set_post_thumbnail_size( 320, 200 );            // Retrieved as 'post-thumbnail'
-        
-        add_image_size( 'single-column', 320, 9999 );   // 320 pixels wide (and unlimited height)
-        add_image_size( 'primary-column', 660, 9999 );  // 660 pixels wide (and unlimited height)
-    }*/
+        //set_post_thumbnail_size( 320, 200 );            // Retrieved as 'post-thumbnail'   
+        //add_image_size( 'single-column', 320, 9999 );   // 320 pixels wide (and unlimited height)
+        //add_image_size( 'primary-column', 660, 9999 );  // 660 pixels wide (and unlimited height)
+    }
     
     // Add support for menus
     register_nav_menu('main-menu', 'Main menu');
@@ -247,9 +241,10 @@ if ( function_exists('add_post_type_support') ) {
     }
 }
 
-// ================ 
-// ! Init Scripts   
-// ================ 
+
+//////////////////
+// Init Scripts   
+//////////////////
 
 function my_scripts_method() {
     
@@ -272,14 +267,11 @@ function my_scripts_method() {
     global $isIE;
     global $siteStrings;
     
-    // iScroll
-    // if ( $isMobile ) {
-    //     wp_enqueue_script('jquery-iscroll', get_template_directory_uri().'/js/iscroll-snap.min.js', array('jquery'), null, true);
-    //     $deps = array('jquery', 'jquery-pjax', 'jquery-iscroll');
-    // } else {
+    if ( $isMobile ) {
+        
+    } else {
     
-    //     $deps = array('jquery');
-    // }
+    }
     
     $deps = array('jquery');
     
@@ -296,9 +288,11 @@ function my_scripts_method() {
         'siteVars', 
         array( 
             'siteurl'     => get_option('siteurl'),
-            //'ajaxurl'   => admin_url( 'admin-ajax.php' ),
-            //'lang'        => get_language_code(),
-            //'siteStrings' => json_encode($siteStrings),
+            'ajaxurl'     => (function_exists('qtrans_getLanguage')) ? 
+                                admin_url('admin-ajax.php?lang=' . qtrans_getLanguage()) : 
+                                admin_url( 'admin-ajax.php' ),
+            'lang'        => get_language_code(),
+            'siteStrings' => json_encode($siteStrings),
             'isMobile'    => $isMobile,
             'isIpad'      => $isIpad,
             'isTablet'    => $isTablet,
@@ -311,34 +305,34 @@ function my_scripts_method() {
 }
 add_action( 'wp_enqueue_scripts', 'my_scripts_method', 20 );
 
+
 ///////////////////
 // Admin Scripts
 ///////////////////
 
-/*function my_admin_scripts_method() {
+function my_admin_scripts_method() {
 
     //wp_register_script('jquery-ui-core');
     wp_enqueue_script('jquery-ui-datepicker', get_template_directory_uri().'/js/ui.datepicker.js', array('jquery','jquery-ui-core'));
 
     wp_enqueue_script('admin-js-functions',get_template_directory_uri().'/js/admin.js', array('jquery','jquery-ui-core','jquery-ui-datepicker'));
 
-    //path to jQuery UI theme stylesheet
+    // Path to jQuery UI theme stylesheet
     wp_enqueue_style('jquery-ui','http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css');
 
     wp_print_styles();
 }
-add_action('admin_print_scripts', 'my_admin_scripts_method');*/
+//add_action('admin_print_scripts', 'my_admin_scripts_method');
 
 
-// =============================== 
-// ! HTML5 Reset initializations   
-// =============================== 
+/////////////////////////////////
+// HTML5 Reset initializations   
+/////////////////////////////////
     
 // Clean up the <head>
 function remove_head_links() {
     // remove_action('wp_head', 'rsd_link');
     // remove_action('wp_head', 'wlwmanifest_link');
-
     remove_action( 'wp_head', 'feed_links_extra', 3 ); // Display the links to the extra feeds such as category feeds
     remove_action( 'wp_head', 'feed_links', 2 ); // Display the links to the general feeds: Post and Comment Feed
     remove_action( 'wp_head', 'rsd_link' ); // Display the link to the Really Simple Discovery service endpoint, EditURI link
