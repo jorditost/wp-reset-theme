@@ -72,6 +72,9 @@
 		'labels' 				=> get_custom_post_type_labels($post_name, 'Entry', 'Team'),
 		'description'       	=> '',
 		'public'                => true,
+		//'exclude_from_search' => true,
+		//'publicly_queryable'	=> false,
+		//'show_in_nav_menus'	=> false,
 	    'show_ui'               => true,
 	    'show_in_menu'          => true,
 	    'capability_type' 		=> 'page',
@@ -258,12 +261,14 @@ add_action('admin_init', 'add_custom_boxes');
 
 function add_custom_boxes() {
 	
+	$page_id = $_GET['post'] ? $_GET['post'] : $_POST['post_ID'];
+
 	// Meta box for a given post type
 	// add_meta_box('custom_meta_box_id', __('Title'), 'custom_meta_box_function', 'post_type', 'advanced', 'default');
-	
+
 	// Target subpage
-	// if (is_subpage_of($_REQUEST['post'], 'parent_page_slug')) {
-	// 	add_meta_box('custom_meta_box_id', __('Title'), 'custom_meta_box_function', 'page', 'advanced', 'default');
+	// if ( is_subpage($page_id) ) {
+	// 	add_meta_box('custom_meta_box_id', __("Title"), 'custom_meta_box_function', 'page', 'advanced', 'default');
 	// }
 	
 	// remove custom fields meta box
@@ -271,7 +276,7 @@ function add_custom_boxes() {
 	remove_meta_box( 'postcustom', 'page', 'advanced' );
 }
 
-/*function save_custom_postdata() {  
+function save_custom_postdata() {  
 	// verify if this is an auto save routine. 
   	// If it is our form has not been submitted, so we dont want to do anything
   	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
@@ -287,11 +292,12 @@ function add_custom_boxes() {
 	// 	update_post_meta($post->ID, 'custom_field_id', $_POST['custom_field_id']);
 	// }
 
-  	// Über uns
-	// if (is_subpage_of($page_id, 'parent_page_slug')) {
-	// 	update_post_meta($post->ID, 'custom_field_id', $_POST['custom_field_id']);
+  	// Target subpage
+	// if ( is_subpage($page_id) ) {
+	// //if (is_subpage_of($page_id, 'parent_page_slug')) {
+	// 	add_meta_box('custom_meta_box_id', __("Title"), 'custom_meta_box_function', 'page', 'advanced', 'default');
 	// }
-}*/
+}
 
 // Cases meta box
 /*function custom_meta_box_function() {

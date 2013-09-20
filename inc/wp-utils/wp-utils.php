@@ -113,13 +113,6 @@ add_filter('the_title', 'the_title_trim');
 // CONTENT Functions  
 ////////////////////////
 
-function get_the_content_with_formatting ($more_link_text = '(more…)', $stripteaser = 0, $more_file = '') {
-	$content = get_the_content($more_link_text, $stripteaser, $more_file);
-	$content = apply_filters('the_content', $content);
-	$content = str_replace(']]>', ']]&gt;', $content);
-	return $content;
-}
-
 // Function that formats content like 'the_content'
 function format_content( $content ) {
 
@@ -128,16 +121,22 @@ function format_content( $content ) {
 	return $content;
 }
 
+function get_the_content_with_formatting ($more_link_text = '(more…)', $stripteaser = 0, $more_file = '') {
+	
+	$content = get_the_content($more_link_text, $stripteaser, $more_file);
+	$content = format_content($content);
+	return $content;
+}
+
 // Get content with a maximum number of chars
 function the_content_limit( $max_char, $more_link_text = "", $stripteaser = 0, $more_file = '' ) {
 	
     $content = get_the_content($more_link_text, $stripteaser, $more_file);
-    $content = apply_filters('the_content', $content);
-    $content = str_replace(']]>', ']]', $content);
+    $content = format_content($content);
     $content = strip_tags($content);
  
-	if ((strlen($content)>$max_char) && ($espacio = strpos($content, " ", $max_char ))) {
-		$content = substr($content, 0, $espacio);
+	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
+		$content = substr($content, 0, $blank_space);
 
 		echo '<span>'.$content.'</span>';
 
@@ -187,20 +186,21 @@ add_filter('the_content', 'remove_empty_paragraphs');
 // Returns if a page has content or not. Returns a boolean.
 function has_content() {
 	global $post;
-	return get_the_content() != '';
-}
 
-// Returns if a page has content or post thumbnail
-function page_has_content() {
-	
 	$content = get_the_content();
 	$content = preg_replace("/(\r\n){3,}/","\r\n\r\n", trim($content));
 	$content = preg_replace("/ +/", " ", $content);
-			
+
 	//If you want to get rid of the extra space at the start of the line:
-	//$content = preg_replace("/^ +/", "", $content);
+	$content = preg_replace("/^ +/", "", $content);
+
+	return (!empty($content));
+}
+
+// Returns if a page has content or post thumbnail
+function has_content_or_thumbnail() {
 	
-	return ( !empty($content) || has_post_thumbnail() );
+	return ( has_content() || has_post_thumbnail() );
 }
 
 
@@ -215,21 +215,21 @@ function get_the_content_split($class = 'block') {
 	$content = '';
 	$result  = '';
 	
-	for($i = 0; $i < count($pages); $i++) {
-
-		// Apply content formatting		
-		$content = apply_filters('the_content', $pages[$i]);
-		$content = str_replace(']]>', ']]>', $content);
-        
-        $result .= '<div class="'.$class.'">'.$content.'</div>';
-    }
+	if (count($pages) > 1) {
+		for($i = 0; $i < count($pages); $i++) {
+			$content = $pages[$i];
+	        $result .= '<div class="'.$class.'">'.$content.'</div>';
+	    }
+	} else {
+		$result = get_the_content();
+	}
 	
 	return $result;
 }
 
 function the_content_split($class = 'block') {
 
-	echo get_the_content_split($class);
+	echo format_content(get_the_content_split($class));
 }
 
 // This function is a filter that splits content by using the_content()
@@ -269,8 +269,7 @@ function get_content_page($pagenum) {
     remove_filter('the_content', 'the_content_split_filter', 1);
 
     // Apply content formatting
-    $content = apply_filters('the_content', $content);
-    $content = str_replace(']]>', ']]>', $content);
+    $content = format_content($content);
 
     return $content;
 }
@@ -297,8 +296,7 @@ function the_manual_excerpt($apply_filters = true) {
 	$content = get_manual_excerpt();
 	
 	if ($apply_filters) {
-	    $content = apply_filters('the_content', $content);
-	    $content = str_replace(']]>', ']]', $content);
+	    $content = format_content($content);
     }
     
 	echo $content;
@@ -308,12 +306,11 @@ function the_manual_excerpt($apply_filters = true) {
 function the_excerpt_limit( $max_char ) {
 
     $content = get_the_excerpt();
-    $content = apply_filters('the_content', $content);
-    $content = str_replace(']]>', ']]', $content);
+    $content = format_content($content);
     $content = strip_tags($content);
  
-	if ((strlen($content)>$max_char) && ($espacio = strpos($content, " ", $max_char ))) {
-		$content = substr($content, 0, $espacio);
+	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
+		$content = substr($content, 0, $blank_space);
 
 		echo $content . '…';
 	}
@@ -324,6 +321,10 @@ function the_excerpt_limit( $max_char ) {
 			echo '…';
 		}
 	}
+}
+
+function get_more_link($permalink, $more_text) {
+	return '<a class="more-link" href="'. $permalink . '">' . $more_text . '</a>';
 }
 
 
@@ -393,17 +394,9 @@ function add_body_class( $classes ) {
 }
 add_filter( 'body_class', 'add_body_class' );
 
-function get_page_slug_by_ID($page_id) {
+function get_page_ID_by_path($path, $post_type = 'page') {
 
-	$page = get_page($page_id);
-
-	if ($page) return $page->post_name;
-    else       return null;
-}
-
-function get_page_ID_by_path($page_slug, $post_type = 'page') {
-
-    $page = get_page_by_path($page_slug, 'OBJECT', $post_type);
+    $page = get_page_by_path($path, 'OBJECT', $post_type);
     
     if ($page) return $page->ID;
     else       return null;
@@ -415,14 +408,72 @@ function get_page_ID_by_page_name($page_name) {
    return $page_name_id;
 }
 
-function get_page_link_by_slug($slug) {
+// Get page slug by ID
+function get_page_slug_by_ID($page_id) {
 
-	$page = get_page_by_path($slug);
+	$page = get_page($page_id);
+
+	if ($page) return $page->post_name;
+    else       return null;
+}
+
+// Get page link by path
+function get_page_link_by_path($path) {
+
+	$page = get_page_by_path($path);
 	if (!$page) return "";
 
 	return get_permalink($page->ID);
 }
 
+// Get page title by path
+function get_page_title_by_path($path) {
+
+	$page = get_page_by_path($path);
+	if (!$page) return "";
+
+	return $page->post_title;
+}
+
+// Get page content by path
+function get_page_content_by_path($path, $format_content = true, $more_text = '') {
+
+	$query_page = get_page_by_path($path);
+	if (!$query_page) return "";
+
+	$return = ($format_content) ? format_content($query_page->post_content) : $query_page->post_content;
+
+	if (!empty($more_text)) {
+		$return .= get_more_link(get_permalink($query_page->ID), $more_text);
+	}
+
+	return $return;
+}
+
+// This function returns formated content by path. 
+// setup_postdata, makes it safer (when working with global $post) than "get_page_content_by_slug"
+function get_page_resume_by_path($path, $show_title = false, $more_text = '') {
+
+    $query_page = get_page_by_path($path); 
+    
+    $return = '';
+    if ($query_page) {
+        
+        if ($show_title) {
+            $return .= '<h5>' . __($query_page->post_title) . '</h5>';
+        }
+
+        $return .= format_content($query_page->post_content);
+
+        if (!empty($more_text)) {
+			$return .= get_more_link(get_permalink($query_page->ID), $more_text);
+		}
+    }
+
+    return $return;
+}
+
+// Subpages functions
 function is_subpage( $page_id ) {
 
 	if ( $page_id ) {
@@ -483,54 +534,6 @@ function has_children($post_id = null, $post_type = null) {
     $children = get_pages("child_of=$post_id&post_type=$post_type");
 
     return (count( $children ) != 0) ? true : false;
-}
-
-
-function get_page_content_by_path($path, $format_content = true, $more_text = '') {
-
-	$query_page = get_page_by_path($path);
-	if (!$query_page) return "";
-
-	$return = ($format_content) ? format_content($query_page->post_content) : $query_page->post_content;
-
-	if (!empty($more_text)) {
-		$return .= '<a class="more-link" href="'. get_permalink($query_page->ID) . '">' . $more_text . '</a>';
-	}
-
-	return $return;
-}
-
-// This function returns formated content by slug. 
-// setup_postdata, makes it safer (when working with global $post) than "get_page_content_by_slug"
-function get_page_resume_by_path($slug, $show_title = false, $more_text = '') {
-    
-	// global $post;
-	// $post = get_page_by_path('beratung/herzlich-willkommen');
-
-	// if ($post) :
- 	// setup_postdata($post);
-
-    $query_page = get_page_by_path($page_slug); 
-    
-    $return = '';
-    if ($query_page) {
-
-        //setup_postdata($query_page);
-        
-        if ($show_title) {
-            $return .= '<h5>' . __($query_page->post_title) . '</h5>';
-        }
-
-        $return .= format_content($query_page->post_content);
-
-        if (!empty($more_text)) {
-			$return .= '<a class="more-link" href="'. get_permalink($query_page->ID) . '">' . $more_text . '</a>';
-		}
-	
-        //wp_reset_postdata();
-    }
-
-    return $return;
 }
 
 
