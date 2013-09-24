@@ -178,12 +178,12 @@ add_filter( 'post_type_link', 'custom_team_link' , 10, 2 );*/
 add_action( 'admin_menu', 'change_post_menu_label' );*/
 
 // Add custon taxonomy column on posts list
-/*function cases_change_columns($defaults) {
+/*function team_change_columns($defaults) {
     $defaults['team-category'] = 'Team Category';
     return $defaults;
 }
 
-function cases_custom_column($column_name, $post_id) {
+function team_custom_column($column_name, $post_id) {
     $taxonomy = $column_name;
     
     if ($taxonomy != 'team-category')
@@ -199,8 +199,8 @@ function cases_custom_column($column_name, $post_id) {
     }
     else echo '<i>No terms.</i>';
 }
-add_filter('manage_team_posts_columns', 'cases_change_columns' );
-add_action('manage_team_posts_custom_column', 'cases_custom_column', 10, 2);*/
+add_filter('manage_team_posts_columns', 'team_change_columns' );
+add_action('manage_team_posts_custom_column', 'team_custom_column', 10, 2);*/
 	
 
 // Filter the request to just give posts for the given taxonomy, if applicable.
@@ -299,7 +299,7 @@ function save_custom_postdata() {
 	// }
 }
 
-// Cases meta box
+// Custom meta box
 /*function custom_meta_box_function() {
 
     global $post;
