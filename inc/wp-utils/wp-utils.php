@@ -664,14 +664,16 @@ add_filter( 'wp_nav_menu_args', 'my_wp_nav_menu_args' );
 
 // Custom navigation menu
 function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false) {
-		
-    if ( ( $locations = get_nav_menu_locations() ) && isset( $locations[ $menu_name ] ) ) {
+	
+	// Value retrieved with action 'check_section'
+    global $current_section;
+
+    if (($locations = get_nav_menu_locations()) && isset($locations[$menu_name])) {
     	
-		$menu = wp_get_nav_menu_object( $locations[ $menu_name ] );
-			
+		$menu 		= wp_get_nav_menu_object( $locations[ $menu_name ] );
 		$menu_items = wp_get_nav_menu_items($menu->term_id);
 	
-		$menu_list = '<ul id="menu-' . $menu_name . '" class="menu">';
+		$menu_list  = '<ul id="menu-' . $menu_name . '" class="menu">';
 
 		// Home link
 		if ($show_home && !(is_home() || is_front_page())) {
@@ -679,22 +681,26 @@ function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false
 		}
 		
 		// Display menu
-		foreach ( (array) $menu_items as $key => $menu_item ) {
+		foreach ((array) $menu_items as $key => $menu_item) {
 		
-			//wp_debug($menu_item);
-			
+			$object_id = $menu_item->object_id;
 			$title     = $menu_item->title;
 			$url       = $menu_item->url;
 			$page_slug = $menu_item->post_name;
-		    
-			$is_active = is_page($menu_item->object_id);
+
+			$object_id = $menu_item->object_id;
+			$title     = $menu_item->title;
+			$url       = $menu_item->url;
+			$page_slug = ($menu_item->object == 'page') ? get_page_slug_by_ID($object_id) : $menu_item->post_name;
+
+			$is_active = (isset($current_section)) ? ($page_slug == $current_section) : is_page($menu_item->object_id);
 
 			// Hide active if necessary
 			if ($is_active && $hide_active) {
 				continue;
 			}
 
-		    $class 	   = $is_active ? ' class="active"' : '';
+		    $class = $is_active ? ' class="active"' : '';
 		    
 		    $menu_list .= '<li id="menu-item-' . $page_slug . '"'. $class .'><a href="' . $url . '">' . $title . '</a></li>';
 		}
@@ -859,8 +865,7 @@ function check_section() {
 
     	// Custom Post Type
     	} else {
-
-        	$post_type = get_post_type();
+        	$post_type = get_post_type() ? get_post_type() : get_query_var('post_type');
     	}
 
         $post_type_obj = get_post_type_object($post_type);

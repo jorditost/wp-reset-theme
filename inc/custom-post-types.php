@@ -8,7 +8,8 @@
  *
  * @Developer Jordi Tost (Follow Me: @jorditost)
  *
- * Read: // http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-post-types-taxonomies/
+ * Read: http://wp.tutsplus.com/tutorials/theme-development/innovative-uses-of-wordpress-post-types-and-taxonomies/
+ * 		 http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-post-types-taxonomies/
  *
  * NOTE: This template script have some examples of how to register custom post types, taxonomies or custom fields.
  *		 Our example Custom Post Type is "team", and our Custom Taxonomy "team-category".

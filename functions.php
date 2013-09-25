@@ -29,7 +29,19 @@ require_once('inc/custom-post-types.php');
 // Inits & Globals
 /////////////////////
 
-// Mobile detection
+// Load jQuery in Footer
+global $load_jquery_in_footer;
+$load_jquery_in_footer = true;
+
+// Test vars
+global $test;
+$test = true;
+
+
+//////////////////////
+// Mobile Detection
+//////////////////////
+
 global $detect;
 global $isMobile;
 global $isIpad;
@@ -57,13 +69,17 @@ function mobile_class() {
     }
 }
 
-// Load jQuery in Footer
-global $load_jquery_in_footer;
-$load_jquery_in_footer = true;
 
-// Test vars
-global $test;
-$test = true;
+////////////////////////
+// Section Functions   
+////////////////////////
+
+//add_action('wp_head', 'check_section');
+
+function get_section_class() {
+    global $current_section;
+    return (isset($current_section) && !empty($current_section)) ? 'section-' . $current_section : '';
+}
 
 
 ////////////////////////
