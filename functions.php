@@ -215,14 +215,18 @@ function my_theme_setup() {
     
     // Register extra featured images
     // http://wordpress.org/plugins/multiple-post-thumbnails/
+    // https://github.com/voceconnect/multi-post-thumbnails
     if (class_exists('MultiPostThumbnails')) {
-        new MultiPostThumbnails(
-            array(
+        
+        $types = array('post', 'page', 'custom_pt');
+        foreach($types as $type) {
+            new MultiPostThumbnails(array(
                 'label' => 'Secondary Image',
                 'id' => 'secondary-image',
-                'post_type' => 'post'
-            )
-        );
+                'post_type' => $type
+                )
+            );
+        }
 
         // Array with all registered IDs for compatibility with wp-gallery-utils.php
         global $exclude_thumb_ids;
