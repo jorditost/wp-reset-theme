@@ -624,17 +624,18 @@ function get_sidebar_page() {
     $page_path = $parent_slug . '/' . $post->post_name . '/sidebar';
 
     // Get post
-    $post = get_page_by_path( $page_path );
+    $query_page = get_page_by_path( $page_path );
 
-    if ($post) :
+    if ($query_page) :
         $sidebar_page = true;
+    	$post = $query_page;
         setup_postdata($post);
 ?>
     <div class="page-widget">
         <?php the_content(); ?>
     </div>
 <?php
-    wp_reset_postdata();
+	wp_reset_postdata();
     endif;
 
     return $sidebar_page;
@@ -711,9 +712,9 @@ function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false
 }
 
 
-////////////////
-// LIST Utils   
-////////////////
+////////////////////////////////////////////
+// CUSTOM POST TYPE Archives & List Utils   
+////////////////////////////////////////////
 
 // Function that lists pages from the same Custom Post Type
 // For hierarchical structure see next function 'wp_list_post_types'
@@ -825,6 +826,47 @@ function wp_list_post_types( $args ) {
         echo $output;
     else
         return $output;
+}
+
+// This function shows links to the post archives for a given post type. 
+// It only accepts 'monthly' and 'yearly' archives. Default is 'monthly'
+function wp_get_custom_post_archives($args, $echo = true) {
+
+	$post_type    = isset($args['post_type'])    ? $args['post_type']    : 'post';
+	$rewrite_slug = isset($args['rewrite_slug']) ? $args['rewrite_slug'] : $post_type;
+	$type    	  = isset($args['type'])  		 ? $args['type']  		 : 'monthly';
+
+    global $wpdb; 
+    $sql = $wpdb->prepare("SELECT * FROM $wpdb->posts WHERE post_type = %s AND post_status = 'publish' GROUP BY YEAR(wp_posts.post_date), MONTH(wp_posts.post_date) ORDER BY wp_posts.post_date DESC", $post_type);
+    $results = $wpdb->get_results($sql);
+
+    if ( $results ) {
+
+        foreach ($results as $r) {
+
+            $year = date('Y', strtotime( $r->post_date ) );
+            $month = date('F', strtotime( $r->post_date ) );
+            $month_num = date('m', strtotime( $r->post_date ) );
+            
+            if ($type == 'yearly') {
+                $link = get_bloginfo('siteurl') . '/' . $rewrite_slug . '/' . $year;
+                $text = $year;
+            } else {
+                $link = get_bloginfo('siteurl') . '/' . $rewrite_slug . '/' . $year . '/' . $month_num;
+                $text = $month . ' ' . $year;
+            }
+
+            $output .= '<li><a href="' . $link . '">' . $text . '</a></li>';
+        }
+
+        if (!$echo) {
+            return $output;
+        }
+
+        echo $output;
+    }
+    
+    return false;
 }
 
 

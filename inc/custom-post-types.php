@@ -8,8 +8,9 @@
  *
  * @Developer Jordi Tost (Follow Me: @jorditost)
  *
- * Read: http://wp.tutsplus.com/tutorials/theme-development/innovative-uses-of-wordpress-post-types-and-taxonomies/
+ * Read: http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-the-basics/
  * 		 http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-post-types-taxonomies/
+ *		 http://wp.tutsplus.com/tutorials/theme-development/innovative-uses-of-wordpress-post-types-and-taxonomies/
  *
  * NOTE: This template script have some examples of how to register custom post types, taxonomies or custom fields.
  *		 Our example Custom Post Type is "team", and our Custom Taxonomy "team-category".
@@ -136,28 +137,63 @@ register_activation_hook( __FILE__, 'custom_plugin_deactivation');
 // Rewrite Rules
 ///////////////////
 
+// Post Type Archives
+// http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-the-basics/
+// http://wp.tutsplus.com/tutorials/creative-coding/the-rewrite-api-post-types-taxonomies/
+
+// Add custom post type yearly/monthly/daily archives
+/*function add_custom_post_type_archives() {
+
+	$post_name = 'custom_post_name';
+
+	// Add day archive (and pagination)
+	add_rewrite_rule($post_name . '/([0-9]{4})/([0-9]{2})/([0-9]{2})/page/?([0-9]{1,})/?','index.php?post_type=' . $post_name . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]&paged=$matches[4]','top');
+	add_rewrite_rule($post_name . '/([0-9]{4})/([0-9]{2})/([0-9]{2})/?','index.php?post_type=' . $post_name . '&year=$matches[1]&monthnum=$matches[2]&day=$matches[3]','top');
+
+	// Add month archive (and pagination)
+	add_rewrite_rule($post_name . '/([0-9]{4})/([0-9]{2})/page/?([0-9]{1,})/?','index.php?post_type=' . $post_name . '&year=$matches[1]&monthnum=$matches[2]&paged=$matches[3]','top');
+	add_rewrite_rule($post_name . '/([0-9]{4})/([0-9]{2})/?','index.php?post_type=' . $post_name . '&year=$matches[1]&monthnum=$matches[2]','top');
+
+	// Add year archive (and pagination)
+	add_rewrite_rule($post_name . '/([0-9]{4})/page/?([0-9]{1,})/?','index.php?post_type=' . $post_name . '&year=$matches[1]&paged=$matches[2]','top');
+	add_rewrite_rule($post_name . '/([0-9]{4})/?','index.php?post_type=' . $post_name . '&year=$matches[1]','top');
+
+}
+add_action('init','add_custom_post_type_archives');*/
+
+// Add custom taxonomy terms to post type permalinks
 /*function add_custom_taxonomy_to_permalink() {
 
-	add_rewrite_rule("^about/team/([^/]+)/([^/]+)/?",'index.php?post_type=team&team-category=$matches[1]&team=$matches[2]','top');
+	$post_name    = 'team';
+	$taxonomy     = 'team-category';
+	$rewrite_slug = 'about/team'; // The rewrite slug set in 'register_post_type'
+
+	add_rewrite_rule('^' . $rewrite_slug . '/([^/]+)/([^/]+)/?','index.php?post_type=' . $post_name . '&' . $taxonomy . '=$matches[1]&' . $post_name . '=$matches[2]','top');
 }
 add_action('init','add_custom_taxonomy_to_permalink');
 
-function custom_team_link( $post_link, $id = 0 ) {
+function custom_post_type_link( $post_link, $id = 0 ) {
+
+	$post_name    = 'team';
+	$taxonomy     = 'team-category';
+	$rewrite_slug = 'about/team'; // The rewrite slug set in 'register_post_type'
+
 	$post = get_post($id);
-	if ( is_wp_error($post) || 'team' != $post->post_type || empty($post->post_name) )
+	if (is_wp_error($post) || $post_name != $post->post_type || empty($post->post_name))
 		return $post_link;
-	// Get the genre:
-	$terms = get_the_terms($post->ID, 'team-category');
-	if( is_wp_error($terms) || !$terms ) {
-		$team_category = 'uncategorised';
+	
+	// Get the current taxonomy term
+	$terms = get_the_terms($post->ID, $taxonomy);
+	if ( is_wp_error($terms) || !$terms ) {
+		$taxonomy_term = 'uncategorised';
+	} else {
+		$taxonomy_term_obj = array_pop($terms);
+		$taxonomy_term = $taxonomy_term_obj->slug;
 	}
-	else {
-		$team_category_obj = array_pop($terms);
-		$team_category = $team_category_obj->slug;
-	}
-	return home_url(user_trailingslashit( "about/team/$team_category/$post->post_name" ));
+
+	return home_url(user_trailingslashit( $rewrite_slug . '/$taxonomy_term/$post->post_name' ));
 }
-add_filter( 'post_type_link', 'custom_team_link' , 10, 2 );*/
+add_filter( 'post_type_link', 'custom_post_type_link' , 10, 2 );*/
 
 
 /////////////////////
