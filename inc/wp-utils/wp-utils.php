@@ -87,7 +87,6 @@ if ( !function_exists('the_slug') ) {
 function the_title_trim( $title ) {
 			
     $title = esc_attr($title);
-    //$title = attribute_escape($title);
 	
     $findthese = array(
         '#Privado:#',
@@ -357,12 +356,12 @@ function the_first_category() {
 function get_first_term_object($taxonomy) {
 
 	global $post;
-
 	$terms = get_the_terms( $post->ID, $taxonomy );
-
-	$first_term = array_shift($terms);
-
-	return $first_term;	
+	
+	if ($terms && !is_wp_error($terms)) {
+		$first_term = array_shift($terms);
+		return $first_term;	
+	}
 }
 
 function get_first_term($taxonomy) {
@@ -379,6 +378,21 @@ function the_first_term($taxonomy) {
 	echo get_first_term($taxonomy);
 }
 
+// Outputs all terms of a givn taxonomy to use them as classes (for filtering)
+function get_the_terms_classes($taxonomy) {
+
+    global $post;
+    $terms = get_the_terms( $post->ID, $taxonomy );
+                            
+    if ($terms && !is_wp_error($terms)) {
+
+        $terms_array = array();
+        foreach ($terms as $term) {
+            $terms_array[] = $term->slug;
+        }
+        return join(' ', $terms_array);
+    }
+}
 
 ////////////////////
 // PAGE Functions  
@@ -914,6 +928,7 @@ function check_section() {
 
         // Get post type slug
         $post_type_slug = $post_type_obj->rewrite[slug];
+        // $post_type_slug = $post_type_obj->rewrite[slug];
 
         // Filter if page slug has a "/"
         $post_type_slug_array = explode('/', $post_type_slug);
@@ -947,7 +962,7 @@ function check_section() {
 // STRING Utils   
 //////////////////
 
-function get_relative_url( $permalink ) {
+function get_relative_url($permalink) {
 
 	$siteurl = get_bloginfo('siteurl') . "/";
 	return rtrim( str_replace($siteurl, '', $permalink), "/");

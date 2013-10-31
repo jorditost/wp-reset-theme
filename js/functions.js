@@ -44,7 +44,7 @@ $(document).ready(function (){
 
     // $window         = $(window);
     // $scrollElement  = $('html, body').scrollTop(0);
-    // $wrapper        = $('#wrapper');
+    // $wrapper        = $('#wrap');
 
     // // Resize
     // resizeSite();
