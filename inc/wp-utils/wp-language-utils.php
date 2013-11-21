@@ -10,6 +10,56 @@
  * @Developer Jordi Tost (Follow Me: @jorditost)
  */
 
+
+///////////////////////
+// Content Functions
+///////////////////////
+
+// This function returns the post thumbnail for a given language
+function the_post_thumbnail_language($image_size) {
+    
+    global $post;
+
+    // qTranslate is activated
+    if (function_exists('qtrans_getLanguage') && class_exists('MultiPostThumbnails')) {
+
+        global $q_config;
+        $lang = qtrans_getLanguage();
+
+        // For default language, return default thumbnail
+        if ($lang == $q_config['default_language']) {
+            
+            the_post_thumbnail($image_size);
+
+        // Other languages
+        } else {
+
+            // Language image ID
+            $image_id = 'thumbnail-'.$lang;
+
+            $has_thumb = MultiPostThumbnails::has_post_thumbnail(get_post_type(), $image_id, strval($post->ID));
+
+            if ($has_thumb) {
+                MultiPostThumbnails::the_post_thumbnail(get_post_type(), $image_id, NULL, $image_size);
+
+            // If there's no language specific image, return the default one
+            } else {
+                the_post_thumbnail($image_size);
+            }
+        }
+
+    // qTranslate or MultiPostThumbnails are deactivated 
+    // -> Return default image
+    } else {
+
+        the_post_thumbnail($image_size);
+    }        
+}
+
+/////////////////////
+// Admin Functions
+/////////////////////
+
 // Just aplicable if qTranslate exists
 if (function_exists('qtrans_getLanguage')) {
 

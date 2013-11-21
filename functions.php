@@ -234,6 +234,45 @@ function my_theme_setup() {
                 'post'      => array('secondary-image'),
                 'custom_pt' => array('secondary-image-cpt')
             );
+
+        // Language images
+        // Translate post images for pages, eBook Services and Software Details
+        if (function_exists('qtrans_getLanguage')) {
+            
+            global $q_config;
+            
+            $types = array('page', 'ebook-service', 'software');
+
+            // Languages
+            $langs =  qtrans_getSortedLanguages(); //array('en', 'es');
+            foreach($langs as $lang) {
+
+                // Use default thumbnail for default language (Deutsch)
+                if ($lang == $q_config['default_language']) continue;
+
+                // Post types
+                foreach($types as $type) {
+                    new MultiPostThumbnails(
+                        array(
+                            'label' => 'Beitragsbild (' . strtoupper($lang) . ')',
+                            'id' => 'thumbnail-'.$lang,
+                            'post_type' => $type
+                        )
+                    );
+
+                    // Add exclude
+
+                    // If key exists, add thumbnail id
+                    if ($exclude_thumb_ids[$type]) {
+                        array_push($exclude_thumb_ids[$type], 'thumbnail-'.$lang);
+
+                    // If not defined, create array key
+                    } else {
+                        $exclude_thumb_ids[$type] = array('thumbnail-'.$lang);
+                    }
+                }
+            }
+        }
     }
 
     // Images size
