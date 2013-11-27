@@ -437,7 +437,9 @@ function get_page_link_by_path($path) {
 	$page = get_page_by_path($path);
 	if (!$page) return "";
 
-	return get_permalink($page->ID);
+	$permalink = get_permalink($page->ID);
+
+	return (function_exists('qtrans_getLanguage')) ? qtrans_convertURL($permalink) : $permalink;
 }
 
 // Get page title by path
@@ -446,7 +448,7 @@ function get_page_title_by_path($path) {
 	$page = get_page_by_path($path);
 	if (!$page) return "";
 
-	return $page->post_title;
+	return (function_exists('qtrans_getLanguage')) ? __($page->post_title) : $page->post_title;
 }
 
 // Get page content by path
