@@ -188,7 +188,7 @@ function disable_plugin_deactivation( $actions, $plugin_file, $plugin_data, $con
         unset( $actions['edit'] );
     // Remove deactivate link for crucial plugins
     if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin_file, array(
-        'plugin_folder/plugin_main_script.php'
+        //'plugin_folder/plugin_main_script.php'
     )))
     
     unset( $actions['deactivate'] );
