@@ -324,8 +324,10 @@ function my_theme_setup() {
     }
     
     // Add support for menus
-    register_nav_menu('main-menu', 'Main menu');
-    register_nav_menu('footer-menu', 'Footer menu');
+    register_nav_menu( array(
+        'main-menu' => 'Main menu',
+        'footer-menu' => 'Footer menu'
+    ));
     
     // Add default posts and comments RSS feed links to head
     add_theme_support( 'automatic-feed-links' );
