@@ -61,10 +61,9 @@
 		   ?>">
 
 	<meta name="description" content="<?php bloginfo('description'); ?>" />
-	<!--Google will often use this as its description of your page/site. Make it good.-->
 	
-	<meta name="author" content="Your Name Here">
-	<meta name="Copyright" content="Copyright Your Name Here 2011. All Rights Reserved.">
+	<meta name="author" content="Your Name here">
+	<meta name="Copyright" content="Copyright Your Name Here <?php echo date("Y"); ?>. All Rights Reserved.">
 	
 	<meta name="google-site-verification" content="">
 	<!-- Speaking of Google, don't forget to set your site up: http://google.com/webmasters -->
@@ -91,12 +90,22 @@
 		 - Transparency is not recommended (iOS will put a black BG behind the icon) -->
 	
 	<!-- CSS: screen, mobile & print are all in the same file -->
-	<link rel="stylesheet" href="<?php bloginfo('stylesheet_url'); ?>">
+	<?php echo is_production(); ?>
+	<?php if (!is_production()): ?>
+		<link rel="stylesheet/less" type="text/css" href="<?php bloginfo('template_directory'); ?>/less/style.less">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.0/less.min.js"></script>
+	<?php else: ?>
+		<link rel="stylesheet" href="<?php bloginfo('stylesheet_url'); ?>">
+	<?php endif; ?>
 	
 	<!-- all our JS is at the bottom of the page, except for Modernizr. -->
 	<!-- This is an un-minified, complete version of Modernizr. 
 		 Before you move to production, you should generate a custom build that only has the detects you need. -->
-	<!--<script src="<?php bloginfo('template_directory'); ?>/js/modernizr-2.6.2.dev.js"></script>-->
+	<?php if (!is_production()): ?>
+		<script src="http://modernizr.com/downloads/modernizr-latest.js"></script>
+	<?php else: ?>
+		<script src="<?php bloginfo('template_directory'); ?>/js/modernizr-min.js"></script>
+	<?php endif; ?>
 	
 	<!-- Application-specific meta tags -->
 	<!-- Windows 8 -->

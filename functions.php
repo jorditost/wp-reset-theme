@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/gpl-2.0.php GNU GPL version 2
  * @version    2.0
  *
- * @Developer Jordi Tost (Follow Me: @jorditost)
+ * @Developer Jordi Tost (Follow Me: @jorditost), Guillaume Mutschler (guillaumemutschler.eu)
  *
  * Notes: PHP vars are lowercase.
  *        Vars that are passed to jQuery are camelcase.   
@@ -24,6 +24,46 @@ require_once('inc/wp-utils/wp-gallery-utils.php');
 require_once('inc/wp-utils/wp-client-utils.php');
 require_once('inc/custom-post-types.php');
 
+//////////////////
+// Detect dev environment  
+//////////////////
+add_action('init', 'is_production');
+function is_production(){
+    // Define Environments
+    $environments = array(
+        'local' => array('.local', 'local.','localhost',),
+        'development' => 'dev.',
+        'staging' => 'stage.',
+        'preview' => 'preview.',
+    );
+    // Get Server name
+    $server_name = $_SERVER['SERVER_NAME'];
+     
+    foreach($environments AS $key => $env){
+        if(is_array($env)){
+            foreach ($env as $option){
+                if(stristr($server_name, $option)){
+                    define('ENVIRONMENT', $key);
+                    break 2;
+                }
+            }
+        } else {
+            if(stristr($server_name, $env)){
+                define('ENVIRONMENT', $key);
+                break;
+            }
+        }
+    }
+
+    // If no environment is set default to production
+    if(!defined('ENVIRONMENT')) define('ENVIRONMENT', 'production');
+
+    if(ENVIRONMENT == 'production'){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 /////////////////////
 // Inits & Globals
