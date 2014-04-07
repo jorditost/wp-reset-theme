@@ -29,6 +29,9 @@ article, aside, figure, footer, header, hgroup, nav, section {display: block;}
 /* force a vertical scrollbar to prevent a jumpy page */
 html {overflow-y: scroll;}
 
+/* Prevent Webkit and Windows Mobile platforms from changing default font sizes */
+body{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%} 
+
 // remember to define focus and active styles!
 :focus {
 	outline: 0;

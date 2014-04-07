@@ -140,7 +140,7 @@
 		<div id="header">
 			<div class="inside">
 				<a id="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo('name'); ?></a>
-				<div id="nav" class="nav-menu group" role="navigation">
+				<div id="main-nav" class="nav-menu group" role="navigation">
 					<?php wp_nav_menu( array('menu' => 'main-menu') ); ?>
 				</div>
 			</div>
