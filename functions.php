@@ -425,6 +425,16 @@ function my_admin_scripts_method() {
 }
 //add_action('admin_print_scripts', 'my_admin_scripts_method');
 
+//////////////////////////////////////
+// keeps crawlers out of the dev env
+//////////////////////////////////////
+
+function robots_access(){
+    if(is_production() && get_option('blog_public') == '0') update_option('blog_public', '1');
+    if(!is_production() && get_option('blog_public') == '1') update_option('blog_public', '0');
+}
+add_action('init', 'robots_access');
+
 
 /////////////////////////////////
 // HTML5 Reset initializations   
