@@ -324,7 +324,7 @@ function my_theme_setup() {
     }
     
     // Add support for menus
-    register_nav_menu( array(
+    register_nav_menus( array(
         'main-menu' => 'Main menu',
         'footer-menu' => 'Footer menu'
     ));
