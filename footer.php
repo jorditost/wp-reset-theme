@@ -3,7 +3,7 @@
 
 	<div id="footer">
 		<div class="inside">
-			<div id="footer-nav" class="nav-menu group"><?php wp_nav_menu( array('menu' => 'footer-menu')); ?></div>
+			<div id="footer-nav" class="nav-menu group"><?php wp_nav_menu( array('theme_location' => 'footer-menu')); ?></div>
 			<div class="copyright">&copy; <?php echo date("Y");?></div>
 		</div>
 	</div><!-- #footer -->

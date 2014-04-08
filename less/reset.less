@@ -1,0 +1,66 @@
+/*
+	
+	Stripped down CSS Reset, limited to the most common elements.
+	Based on the HTML5 Reset Wordpress Theme :: https://github.com/murtaugh/HTML5-Reset-Wordpress-Theme
+
+	If you need to add some specific elements (pre, bloquotes/q, input/textarea/select/label,tables,etc.), please visit: https://github.com/murtaugh/HTML5-Reset-WordPress-Theme/blob/master/reset.css
+
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp, strike, strong, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td, small, big {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+article, aside, figure, footer, header, hgroup, nav, section {display: block;}
+
+/* force a vertical scrollbar to prevent a jumpy page */
+html {overflow-y: scroll;}
+
+/* Prevent Webkit and Windows Mobile platforms from changing default font sizes */
+body{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%} 
+
+// remember to define focus and active styles!
+:focus {
+	outline: 0;
+	border: none;
+}
+:active {
+	outline: 0;
+	border: none;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+a {
+	cursor: pointer;
+	text-decoration: none;
+	outline: none;
+	border: none;
+}
+
+/* Clearfix Mixin */
+.clearfix() {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}

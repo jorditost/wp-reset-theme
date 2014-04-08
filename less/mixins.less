@@ -1,0 +1,24 @@
+//FONT MIXINS
+.ffamily(@font) {
+	font-family: @font, sans-serif;
+}
+.ffamily(@size, @font) {
+	.ffamily(@font);
+	font-size: @size;
+}
+.ffamily(@size, @font, @weight) {
+	.ffamily(@size, @font);
+	font-weight: @weight;
+}
+.optimize-text() {
+    text-rendering: optimizeLegibility;
+}
+
+
+//BLOCK MIXINS
+.inside-block(@width) {
+    position: relative;
+    width: @width;
+    margin-left: auto;
+    margin-right: auto;
+}

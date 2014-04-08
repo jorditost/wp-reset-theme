@@ -1,205 +1,98 @@
 /*   
-Theme Name: HTML5 Reset Wordpress Theme
-Theme URI: https://github.com/jorditost/wp-reset-theme
-Author: Jordi Tost
-Author URI: https://github.com/jorditost/
-Version: 1.0
+Theme Name: HTML5 Reset Wordpress Theme based on Jordi Tost work: https://github.com/jorditost/wp-reset-theme
+Theme URI: https://github.com/Sooricatz/wp-reset-theme
+Author: Guillaume Mutschler
+Author URI: http://guillaumemutschler.eu/
+Version: 1.5
 */
 
-// Main Framework 
+//
+// Imports
 @import "reset";
-@import "common-vars";
-@import "common";
-
-// Theme specific
 @import "vars";
 @import "mixins";
 
-/* Ok, this is where the fun starts.
----------------------------------------*/
+//  GLOBAL LAYOUT
+////////////////////
+#content { float: left; display: block; width: @content-width; margin-right: @content-margin; }
+#sidebar { float: left; display: block; width: @sidebar-width; }
 
-body {
-	font: 13px @font-reg;
-	line-height: 1.4;
-}
-
-html, body {
-    -webkit-text-size-adjust: 100% !important; /* Prevent font scaling in landscape */
-}
-
-// Webkit smoothing
-// http://www.icondeposit.com/blog:how-to-properly-smooth-font-using-css3
-//html, html a {
-* {
-	-webkit-font-smoothing: antialiased !important; 
-}
-
-body, select, input, textarea { 
-	color: @text-color; 
-}
-
-a {
-	color: @link-color; 
-	text-decoration: none;
-
-	outline: none;
-	border: none;
-
-	&:hover {
-		color: @link-h-color;
-	}
-
-	&:active, &:focus, &:hover {
-		border: none;
-		outline: none;
-	}
-
-	.transition(all, 0.1s, ease);
-}
-
-// Bold fonts when using web-fonts
-// strong {
-// 	font-family: @font-bold;
-// 	font-weight: 100;
-// }
-
-p {
-	margin-bottom: 5px;
-}
-
-::-moz-selection{background: @sel-color; color: #fff; text-shadow: none;}
-::selection {background: @sel-color; color: #fff; text-shadow: none;}
-
-// /*	j.mp/webkit-tap-highlight-color */
-a:link {-webkit-tap-highlight-color: @tap-color;}
-
-ins {background-color: #fcd700; color: #000; text-decoration: none;}
-mark {background-color: #fcd700; color: #000; font-style: italic; font-weight: bold;}
+.inside { .inside-block(@wrap-width); .clearfix(); }
 
 
-/////////////
-// Headers
-/////////////
 
-h1, h2, h3, h4, h5, h6 {
-	// font-weight: 100;
-	.optimize-text();
-}
+//  GLOBAL STYLING
+////////////////////
+::-moz-selection{background: @sel-color; color: #fff; text-shadow: none;} ::selection {background: @sel-color; color: #fff; text-shadow: none;} a:link {-webkit-tap-highlight-color: @tap-color;}
+body { font: 13px @font-reg; line-height: 1.4; color: @text-color; }
 
+h1, h2, h3, h4, h5, h6 { .optimize-text(); }
 
-//////////////////
-// Main Classes
-//////////////////
-
-.inside {
-	.inside-block(@wrap-width);
-}
-
-.more-link {
-
-}
-
-// Main Nav
-.nav-menu {
-
-	// ul { 
-	// 	font-size:0; // removes space created by inline-block
-	// }
-
-	li {
-		margin-left:15px;
-		text-align:right;
-		
-		.inline-block();
-
-		&:first-child {
-			margin-left:0;
-		}
-
-		// Text styles
-		a {
-			padding:5px 0;
-			display: block;
-			.optimize-text();
-		}
-
-		// Active / hover styles
-		&.active > a, 
-		&.current-menu-item > a,
-		&.current-cat > a,
-		a:hover {
-
-			// current item styles
-		}
-	}
-}
-
-// Backgrounds
-// Separators
-// Text classes
+a { color: @link-color; }
+a:hover { color: @link-h-color; }
 
 
-/////////////
-// HEADER
-/////////////
 
+//  HEADER
+////////////////////
 #header {
-	
-	.inside {
-		//padding:45px 0 30px;
-	}
 }
 
 #logo {
-	//.background-image('images/logo.png');
-	//.background-image-devices('images/logo', 'png', 137px 24px);
-	//.block(137px, 24px);
-	//.no-text();
+  //.background-image('images/logo.png');
+  //.background-image-devices('images/logo', 'png', 137px 24px);
+  //.block(137px, 24px);
+  //.no-text();
 }
 
-#nav {
-	position: absolute;
-	bottom:24px;
-	right:0;
+#main-nav {
+  position: absolute;
+  top: 0;
+  right:0;
+
+    li {
+    margin-right:15px;
+    margin-left:0;
+    text-align:left;
+    display: inline-block;
+
+    // Text styles
+    a {
+      padding:5px 0;
+      display: block;
+    }
+  }
 }
 
-/////////////////////
-// MAIN STRUCTURE
-/////////////////////
 
-#content {
-	float: left;
-	display: block;
-	width: @content-width;
-	margin-right: @content-margin;
-}
 
-#sidebar {
-	float: left;
-	display: block;
-	width: @sidebar-width;
-}
+//  CONTENT (Ok, this is where the fun starts.)
+////////////////////
 
-/////////////
+  //  PAGES SPECIFIC
+  ////////////////////
+
+
+
 // FOOTER
-/////////////
-
-#footer {
-
-}
-
+////////////////////
 #footer-nav {
-	
+
+  li {
+    margin-right:15px;
+    margin-left:0;
+    text-align:left;
+    display: inline-block;
+
+    // Text styles
+    a {
+      padding:5px 0;
+      display: block;
+    }
+  }
 }
 
-///////////////////
-// Sticky Footer
-///////////////////
 
-//.sticky-footer(@footer-height);
+//  MEDIA QUERIES
+////////////////////
 
-///////////////////
-// Media Queries
-///////////////////
-
-//@import "media-queries";

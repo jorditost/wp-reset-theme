@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/gpl-2.0.php GNU GPL version 2
  * @version    2.0
  *
- * @Developer Jordi Tost (Follow Me: @jorditost)
+ * @Developer Jordi Tost (Follow Me: @jorditost), Guillaume Mutschler (guillaumemutschler.eu)
  *
  * Notes: PHP vars are lowercase.
  *        Vars that are passed to jQuery are camelcase.   
@@ -24,6 +24,46 @@ require_once('inc/wp-utils/wp-gallery-utils.php');
 require_once('inc/wp-utils/wp-client-utils.php');
 require_once('inc/custom-post-types.php');
 
+//////////////////
+// Detect dev environment  
+//////////////////
+add_action('init', 'is_production');
+function is_production(){
+    // Define Environments
+    $environments = array(
+        'local' => array('.local', 'local.','localhost',),
+        'development' => 'dev.',
+        'staging' => 'stage.',
+        'preview' => 'preview.',
+    );
+    // Get Server name
+    $server_name = $_SERVER['SERVER_NAME'];
+     
+    foreach($environments AS $key => $env){
+        if(is_array($env)){
+            foreach ($env as $option){
+                if(stristr($server_name, $option)){
+                    define('ENVIRONMENT', $key);
+                    break 2;
+                }
+            }
+        } else {
+            if(stristr($server_name, $env)){
+                define('ENVIRONMENT', $key);
+                break;
+            }
+        }
+    }
+
+    // If no environment is set default to production
+    if(!defined('ENVIRONMENT')) define('ENVIRONMENT', 'production');
+
+    if(ENVIRONMENT == 'production'){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 /////////////////////
 // Inits & Globals
@@ -284,8 +324,10 @@ function my_theme_setup() {
     }
     
     // Add support for menus
-    register_nav_menu('main-menu', 'Main menu');
-    register_nav_menu('footer-menu', 'Footer menu');
+    register_nav_menus( array(
+        'main-menu' => 'Main menu',
+        'footer-menu' => 'Footer menu'
+    ));
     
     // Add default posts and comments RSS feed links to head
     add_theme_support( 'automatic-feed-links' );
@@ -384,24 +426,34 @@ function my_admin_scripts_method() {
 //add_action('admin_print_scripts', 'my_admin_scripts_method');
 
 
+//////////////////////////////////////
+// keeps crawlers out of the dev env
+//////////////////////////////////////
+
+function robots_access(){
+    if(is_production() && get_option('blog_public') == '0') update_option('blog_public', '1');
+    if(!is_production() && get_option('blog_public') == '1') update_option('blog_public', '0');
+}
+add_action('init', 'robots_access');
+
+
 /////////////////////////////////
 // HTML5 Reset initializations   
 /////////////////////////////////
     
 // Clean up the <head>
 function remove_head_links() {
-    // remove_action('wp_head', 'rsd_link');
-    // remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'rsd_link'); //Really Simple Discovery service: Used by 3rd party software posts (like phones wordpress app -> reactivate if needed)
+    remove_action('wp_head', 'wlwmanifest_link'); //Used by Windows Live Writer
     remove_action( 'wp_head', 'feed_links_extra', 3 ); // Display the links to the extra feeds such as category feeds
     remove_action( 'wp_head', 'feed_links', 2 ); // Display the links to the general feeds: Post and Comment Feed
-    //remove_action( 'wp_head', 'rsd_link' ); // Display the link to the Really Simple Discovery service endpoint, EditURI link
-    //remove_action( 'wp_head', 'wlwmanifest_link' ); // Display the link to the Windows Live Writer manifest file.
     remove_action( 'wp_head', 'index_rel_link' ); // index link
     remove_action( 'wp_head', 'parent_post_rel_link', 10, 0 ); // prev link
     remove_action( 'wp_head', 'start_post_rel_link', 10, 0 ); // start link
     remove_action( 'wp_head', 'adjacent_posts_rel_link', 10, 0 ); // Display relational links for the posts adjacent to the current post.
     remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0 );
     remove_action( 'wp_head', 'wp_generator' ); // Display the XHTML generator that is generated on the wp_head hook, WP version
+
 }
 add_action('init', 'remove_head_links');
 //remove_action('wp_head', 'wp_generator');
