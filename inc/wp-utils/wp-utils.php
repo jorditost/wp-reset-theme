@@ -394,6 +394,22 @@ function get_the_terms_classes($taxonomy) {
     }
 }
 
+// Outputs the terms string splitted by a separator
+function get_the_terms_string($taxonomy, $sep = ',') {
+
+    global $post;
+    $terms = get_the_terms( $post->ID, $taxonomy );
+                            
+    if ($terms && !is_wp_error($terms)) {
+
+        $terms_array = array();
+        foreach ($terms as $term) {
+            $terms_array[] = $term->name;
+        }
+        return join($sep . ' ', $terms_array);
+    }
+}
+
 ////////////////////
 // PAGE Functions  
 ////////////////////
@@ -707,7 +723,7 @@ function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false
 
 			$object_id = $menu_item->object_id;
 			$title     = $menu_item->title;
-			$url       = function_exists('qtrans_getLanguage')) ? qtrans_convertURL($menu_item->url) : $menu_item->url;
+			$url       = function_exists('qtrans_getLanguage') ? qtrans_convertURL($menu_item->url) : $menu_item->url;
 			$page_slug = ($menu_item->object == 'page') ? get_page_slug_by_ID($object_id) : $menu_item->post_name;
 
 			$is_active = (isset($current_section)) ? ($page_slug == $current_section) : is_page($menu_item->object_id);

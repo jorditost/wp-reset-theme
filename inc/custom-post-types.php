@@ -298,7 +298,7 @@ add_action('admin_init', 'add_custom_boxes');
 
 function add_custom_boxes() {
 	
-	$page_id = $_GET['post'] ? $_GET['post'] : $_POST['post_ID'];
+	//$page_id = isset($_GET['post']) ? $_GET['post'] : $_POST['post_ID'];
 
 	// Meta box for a given post type
 	// add_meta_box('custom_meta_box_id', __('Title'), 'custom_meta_box_function', 'post_type', 'advanced', 'default');

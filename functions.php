@@ -172,7 +172,7 @@ add_filter('show_admin_bar', '__return_false');
 ///////////////////
 
 // Uncomment to remove WP Version update notifications
-//add_action('admin_menu','remove_wp_update_notifications');
+add_action('admin_menu','remove_wp_update_notifications');
 
 // Remove notifications for login plugins
 function filter_plugin_updates( $value ) {
