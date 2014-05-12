@@ -182,6 +182,10 @@ function remove_empty_paragraphs($content) {
 }
 add_filter('the_content', 'remove_empty_paragraphs');
 
+// Solution to WordPress adding br and p tags around shortcodes
+remove_filter( 'the_content', 'wpautop' );
+add_filter( 'the_content', 'wpautop' , 12);
+
 // Returns if a page has content or not. Returns a boolean.
 function has_content() {
 	global $post;
@@ -307,6 +311,27 @@ function the_excerpt_limit( $max_char ) {
     $content = get_the_excerpt();
     $content = format_content($content);
     $content = strip_tags($content);
+ 
+	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
+		$content = substr($content, 0, $blank_space);
+
+		echo $content . '…';
+	}
+	else {
+		echo $content;
+		
+		if ( strlen($content)>$max_char && $more_link_text != "" ) {		  
+			echo '…';
+		}
+	}
+}
+
+// Get the content with a maximum number of chars
+function get_the_content_limit( $max_char ) {
+
+    $content = get_the_content();
+    //$content = format_content($content);
+    //$content = strip_tags($content);
  
 	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
 		$content = substr($content, 0, $blank_space);
