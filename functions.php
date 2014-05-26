@@ -128,9 +128,21 @@ function get_post_custom_field_lang($custom_field) {
 function edit_admin_menus() {
 
     global $menu;
-    
-    // Change Posts to Blog
-    //$menu[5][0] = 'Blog';
+
+    // Change menu labels
+    foreach($menu as $key=>$menu_item) {
+
+        if (empty($menu_item[0])) continue;
+
+        // Posts are in position 5
+        if ($key == 5) {
+            $menu[$key][0] = 'Aktuelles';
+        
+        // Other custom post types
+        } /*else if ($menu_item[0] == 'Erfolgsgeschichten') {
+            $menu[$key][0] = 'Erfolgsgesch.';
+        }*/
+    }
 
     // Remove menus
     //remove_menu_page('edit.php');         // Remove Posts
