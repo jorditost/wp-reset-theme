@@ -282,6 +282,11 @@ input,
 textarea {
   color: #333333;
 }
+strong,
+b {
+  font-family: Helmet, Freesans, sans-serif;
+  font-weight: normal;
+}
 a {
   color: #0033ff;
   text-decoration: none;
