@@ -289,9 +289,14 @@ add_filter('mce_buttons','wysiwyg_editor');
 // EXCERPT Functions
 ///////////////////////
 
+function get_manual_excerpt_or_resume($max_chars) {
+	global $post;
+	return (has_excerpt()) ? get_the_excerpt() : get_the_content_limit($max_chars);
+}
+
 function get_manual_excerpt() {
 	global $post;
-	return ( has_excerpt() ) ? get_the_excerpt() : '';
+	return (has_excerpt()) ? get_the_excerpt() : '';
 }
 
 function the_manual_excerpt($apply_filters = true) {
@@ -1046,6 +1051,12 @@ function nls2p($str) {
   return str_replace('<p></p>', '', '<p>' 
         . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</p>$0<p>', $str) 
         . '</p>');
+}
+
+// Replace new line for <br> tag
+function nls2br($str) {
+
+  return str_replace("\n", '<br />', $str);
 }
 
 // Function that changes all <br> tags in a content for a span element

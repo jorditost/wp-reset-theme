@@ -121,6 +121,7 @@ if (function_exists('qtrans_getLanguage')) {
         switch( $style ) {
             case 'image':
             case 'text':
+            case 'code':
             case 'dropdown':
                 echo '<ul class="qtrans_language_chooser" id="' . $id . '">';
                 foreach( qtrans_getSortedLanguages() as $language ) {
