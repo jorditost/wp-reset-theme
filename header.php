@@ -137,5 +137,20 @@
 			</div>
 		</div><!-- #header -->
 
+		<div id="header">
+			<div class="inside">
+				<a id="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo('name'); ?></a>
+				<div id="header-menu">
+					<div id="nav" class="nav-menu group" role="navigation">
+						<?php wp_nav_menu( array('menu' => 'main-menu') ); ?>
+					</div>
+					<?php if (function_exists('qtrans_getLanguage')) { echo qtrans_SelectCode('code', 'lang'); } ?>
+				</div>
+
+				<a href="#" id="menu-button">Menu</a>
+
+			</div>
+		</div><!-- #header -->
+
 		<div id="main" class="inside group">
 

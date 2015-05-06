@@ -23,6 +23,10 @@ body {
 	line-height: 1.4;
 }
 
+html {
+	overflow-x: hidden; // avoid scrolling when out of wrapper elements
+}
+
 html, body {
     -webkit-text-size-adjust: 100% !important; /* Prevent font scaling in landscape */
 }
@@ -137,6 +141,11 @@ h1, h2, h3, h4, h5, h6 {
 			// current item styles
 		}
 	}
+}
+
+#menu-button {
+	display: none;
+	&:link {-webkit-tap-highlight-color: transparent;}
 }
 
 // Backgrounds

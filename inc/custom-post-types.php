@@ -200,19 +200,36 @@ add_filter( 'post_type_link', 'custom_post_type_link' , 10, 2 );*/
 // Admin Functions
 /////////////////////
 
-// Function that changes menu labels
-/*function change_post_menu_label() {
-    global $menu;
-    global $submenu;
-	
-	// Change Custom Post Types menu items
-    //$menu[5][0] = 'Produkte';
-    //$submenu['edit.php'][5][0] = 'All Products';
-    //$submenu['edit.php'][15][0] = 'Collections'; 	// Change name for categories
-    //$submenu['edit.php'][16][0] = 'Labels'; 		// Change name for tags
-    echo '';
+// Add post thumbnail to admin post view
+
+global $posts_with_thumb_in_admin;
+$posts_with_thumb_in_admin = array('post');
+
+add_filter('manage_posts_columns', 'posts_columns', 5);
+add_action('manage_posts_custom_column', 'posts_custom_columns', 5, 2);
+
+function posts_columns($defaults) {
+
+	global $posts_with_thumb_in_admin;
+	$post_type = get_post_type($post_id);
+
+	if (in_array($post_type, $posts_with_thumb_in_admin)) {
+    	$defaults['post_thumb'] = __('Thumbnail');
+	}
+    return $defaults;
 }
-add_action( 'admin_menu', 'change_post_menu_label' );*/
+
+function posts_custom_columns($column_name, $id){
+
+	global $posts_with_thumb_in_admin;
+	$post_type = get_post_type($post_id);
+	
+	if (in_array($post_type, $posts_with_thumb_in_admin) && 
+		$column_name === 'post_thumb') {
+		echo the_post_thumbnail( 'admin-thumb' );
+	}
+}
+
 
 // Add custon taxonomy column on posts list
 /*function team_change_columns($defaults) {

@@ -5,10 +5,27 @@
  *
  * @copyright  Copyright © 2011-2012 Jordi Tost
  * @license    http://www.opensource.org/licenses/gpl-2.0.php GNU GPL version 2
- * @version    2.2
+ * @version    2.3
  *
  * @Developer Jordi Tost (Follow Me: @jorditost)
  */
+
+// Function to use with the LazyLoad plugin
+// http://www.appelsiini.net/projects/lazyload
+function the_lazy_post_thumbnail($size) {
+
+	global $post;
+	$thumb = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), $size);
+
+	if (!empty($thumb)) {
+		$url    = $thumb['0'];
+		$width  = $thumb['1'];
+		$height = $thumb['2'];
+
+		echo '<img class="lazy" data-original="'.$url.'" width="'.$width.'" height="'.$height.'">';
+		echo '<noscript><img src="'.$url.'" width="'.$width.'" height="'.$height.'"></noscript>';
+	}
+}
 
 function the_post_gallery_custom( $size = 'large', $show_videos = false, $tag = 'li', $exclude_thumb = true, $more_attr = '', $max_images = -1 ) {
 

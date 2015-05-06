@@ -24,6 +24,32 @@ add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_version_c
 add_filter( 'pre_site_transient_update_core', create_function( '$a', "return null;" ) );
 
 
+// Remove WP Version update notifications
+add_action('admin_menu','remove_wp_update_notifications');
+
+// Remove notifications for login plugins
+function filter_plugin_updates( $value ) {
+    unset( $value->response['akismet/akismet.php'] );
+    return $value;
+}
+add_filter( 'site_transient_update_plugins', 'filter_plugin_updates' );
+
+// Avoid plugin deactivation
+function disable_plugin_deactivation( $actions, $plugin_file, $plugin_data, $context ) {
+    // Remove edit link for all
+    if ( array_key_exists( 'edit', $actions ) )
+        unset( $actions['edit'] );
+    // Remove deactivate link for crucial plugins
+    if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin_file, array(
+        //'plugin_folder/plugin_main_script.php'
+    )))
+    
+    unset( $actions['deactivate'] );
+    return $actions;
+}
+//add_filter( 'plugin_action_links', 'disable_plugin_deactivation', 10, 4 );
+
+
 /////////////////////////
 // DASHBOARD Functions   
 /////////////////////////

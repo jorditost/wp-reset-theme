@@ -21,6 +21,7 @@ require_once('inc/utils/Mobile_Detect.php');
 require_once('inc/wp-utils/wp-utils.php');
 require_once('inc/wp-utils/wp-language-utils.php');
 require_once('inc/wp-utils/wp-gallery-utils.php');
+require_once('inc/wp-utils/wp-admin-utils.php');
 require_once('inc/wp-utils/wp-client-utils.php');
 require_once('inc/custom-post-types.php');
 
@@ -71,18 +72,6 @@ function mobile_class() {
 
 
 ////////////////////////
-// Section Functions   
-////////////////////////
-
-//add_action('wp_head', 'check_section');
-
-function get_section_class() {
-    global $current_section;
-    return (isset($current_section) && !empty($current_section)) ? 'section-' . $current_section : '';
-}
-
-
-////////////////////////
 // Language Functions   
 ////////////////////////
 
@@ -112,10 +101,84 @@ function get_post_custom_field_lang($custom_field) {
 }
 
 
+////////////////////////
+// Section Functions   
+////////////////////////
+
+add_action('wp_head', 'check_section');
+
+function get_current_section() {
+    global $current_section;
+    return $current_section;
+}
+
+function get_current_section_class() {
+    global $current_section;
+    return (isset($current_section) && !empty($current_section)) ? 'section-' . $current_section : '';
+}
+
+
+///////////////////////
+// Template Redirect
+///////////////////////
+
+/*function custom_template_redirect() {
+
+    global $post;
+    global $current_section;
+
+    if (is_404() && !is_admin()) {
+        wp_redirect( home_url(), 301 ); 
+        exit;
+    }
+
+    // When in content pages, redirect to the first child of the post type
+    if (is_page(array('feste-dritte-zaehne'))) {
+
+        global $post;
+
+        // Get first child page
+        $args = array(
+                'posts_per_page'  => 1,
+                'orderby'         => 'menu_order',
+                'order'           => 'ASC',
+                'post_parent'     => $post->ID,
+                'post_type'       => 'page' // page slug is custom post type slug
+            );
+
+        // Get posts
+        $child_page = get_posts( $args );
+
+        if ($child_page && sizeof($child_page) >= 1) {
+            wp_redirect(get_permalink($child_page[0]->ID));
+            exit;
+        }
+
+    // Case Studies -> Load first child
+    } elseif (is_page('case-studies')) {
+
+        $args = array(
+                'posts_per_page'  => 1,
+                'orderby'         => 'menu_order',
+                'order'           => 'ASC',
+                'post_type'       => 'case' // page slug is custom post type slug
+            );
+
+        // Get posts
+        $case = get_posts( $args );
+        
+        if ($case && sizeof($case) >= 1) {
+            wp_redirect(get_permalink($case[0]->ID));
+            exit;
+        }
+    }
+}
+add_action('template_redirect', 'custom_template_redirect');*/
+
+
 ///////////////////////
 // Content Functions   
 ///////////////////////
-
 
 
 
@@ -126,24 +189,6 @@ function get_post_custom_field_lang($custom_field) {
 // Edit admin menus
 // http://wp.tutsplus.com/tutorials/creative-coding/customizing-your-wordpress-admin/
 function edit_admin_menus() {
-
-    global $menu;
-
-    // Change menu labels
-    foreach($menu as $key=>$menu_item) {
-
-        if (empty($menu_item[0])) continue;
-
-        // Posts are in position 5
-        if ($key == 5) {
-            $menu[$key][0] = 'Aktuelles';
-        
-        // Other custom post types
-        } /*else if ($menu_item[0] == 'Erfolgsgeschichten') {
-            $menu[$key][0] = 'Erfolgsgesch.';
-        }*/
-    }
-
     // Remove menus
     //remove_menu_page('edit.php');         // Remove Posts
     remove_menu_page('edit-comments.php');  // Remove Comments
@@ -177,36 +222,6 @@ function my_list_terms_exclusions( $exclusions, $args ) {
 
 // Remove admin bar
 add_filter('show_admin_bar', '__return_false');
-
-
-///////////////////
-// Notifications
-///////////////////
-
-// Uncomment to remove WP Version update notifications
-add_action('admin_menu','remove_wp_update_notifications');
-
-// Remove notifications for login plugins
-function filter_plugin_updates( $value ) {
-    unset( $value->response['akismet/akismet.php'] );
-    return $value;
-}
-add_filter( 'site_transient_update_plugins', 'filter_plugin_updates' );
-
-// Avoid plugin deactivation
-function disable_plugin_deactivation( $actions, $plugin_file, $plugin_data, $context ) {
-    // Remove edit link for all
-    if ( array_key_exists( 'edit', $actions ) )
-        unset( $actions['edit'] );
-    // Remove deactivate link for crucial plugins
-    if ( array_key_exists( 'deactivate', $actions ) && in_array( $plugin_file, array(
-        //'plugin_folder/plugin_main_script.php'
-    )))
-    
-    unset( $actions['deactivate'] );
-    return $actions;
-}
-//add_filter( 'plugin_action_links', 'disable_plugin_deactivation', 10, 4 );
 
 
 /////////////////

@@ -186,6 +186,12 @@ add_filter('the_content', 'remove_empty_paragraphs');
 remove_filter( 'the_content', 'wpautop' );
 add_filter( 'the_content', 'wpautop' , 12);
 
+// Filter paragraphs on images
+function filter_ptags_on_images($content){
+    return preg_replace('/<p>\s*(<a .*>)?\s*(<img .* \/>)\s*(<\/a>)?\s*<\/p>/iU', '\1\2\3', $content);
+}
+//add_filter('the_content', 'filter_ptags_on_images');
+
 // Returns if a page has content or not. Returns a boolean.
 function has_content() {
 	global $post;
@@ -276,13 +282,6 @@ function get_content_page($pagenum) {
 
     return $content;
 }
-
-// TEXT EDITOR - Add Next Page button on Tiny MCE editor
-function wysiwyg_editor($mce_buttons) {
-	$mce_buttons = array('bold', 'italic', '|', 'bullist', 'numlist', 'blockquote', '|', 'justifyleft', 'justifycenter', 'justifyright', '|', 'link', 'unlink', '|', 'spellchecker', 'fullscreen', 'wp_adv', '|', 'wp_page');
-	return $mce_buttons;
-}
-add_filter('mce_buttons','wysiwyg_editor');
 
 
 ///////////////////////
@@ -383,35 +382,81 @@ function the_first_category() {
 	echo get_first_category();
 }
 
-function get_first_term_object($taxonomy) {
+function get_first_term_object($taxonomy, $only_parent_cat = false) {
 
 	global $post;
 	$terms = get_the_terms( $post->ID, $taxonomy );
 	
 	if ($terms && !is_wp_error($terms)) {
 		$first_term = array_shift($terms);
+
+
+		// If hierarchical, add parent term for child terms
+        if ($only_parent_cat && $first_term->parent != 0) {
+
+        	// Parent term
+        	$parent_term = get_term($first_term->parent, $taxonomy);
+        	if ($parent_term) {
+        		return $parent_term;
+        	}
+        }
+
 		return $first_term;	
 	}
 }
 
-function get_first_term($taxonomy) {
+function get_first_term($taxonomy, $only_parent_cat = false) {
 
 	$first_term = get_first_term_object($taxonomy);
 	
 	if( $first_term ) {
+
+		// If hierarchical, add parent term for child terms
+        if ($only_parent_cat && $first_term->parent != 0) {
+
+        	// Parent term
+        	$parent_term = get_term($first_term->parent, $taxonomy);
+        	if ($parent_term) {
+        		return $parent_term->name;
+        	}
+        }
+
 		return $first_term->name;
 	}
 }
 
-function the_first_term($taxonomy) {
+function the_first_term($taxonomy, $only_parent_cat = false) {
 	
-	echo get_first_term($taxonomy);
+	echo get_first_term($taxonomy, $only_parent_cat);
 }
 
-// Outputs all terms of a givn taxonomy to use them as classes (for filtering)
+function get_first_term_slug($taxonomy, $only_parent_cat = false) {
+
+	$first_term = get_first_term_object($taxonomy);
+	
+	if ($first_term) {
+
+		// If hierarchical, add parent term for child terms
+        if ($only_parent_cat && $first_term->parent != 0) {
+
+        	// Parent term
+        	$parent_term = get_term($first_term->parent, $taxonomy);
+        	if ($parent_term) {
+        		return $parent_term->slug;
+        	}
+        }
+
+		return $first_term->slug;
+	}
+}
+
+// Outputs all terms of a given taxonomy to use them as classes (for filtering)
 function get_the_terms_classes($taxonomy) {
 
     global $post;
+    $tax_obj = get_taxonomy($taxonomy);
+    if (!$tax_obj) { return; }
+
     $terms = get_the_terms( $post->ID, $taxonomy );
                             
     if ($terms && !is_wp_error($terms)) {
@@ -419,7 +464,22 @@ function get_the_terms_classes($taxonomy) {
         $terms_array = array();
         foreach ($terms as $term) {
             $terms_array[] = $term->slug;
+
+            // If hierarchical, add parent term for child terms
+            if ($tax_obj->hierarchical && $term->parent != 0) {
+
+            	// Parent term
+            	$parent_term = get_term($term->parent, $taxonomy);
+            	if ($parent_term) {
+            		$terms_array[] = $parent_term->slug;
+            	}
+            }
         }
+
+        // Check repeated values
+        $terms_array = array_unique($terms_array);
+
+        // Return categories separated by an empty space
         return join(' ', $terms_array);
     }
 }
@@ -726,6 +786,7 @@ function my_wp_nav_menu_args( $args = '' )
 add_filter( 'wp_nav_menu_args', 'my_wp_nav_menu_args' );
 
 // Custom navigation menu
+// !!! This function only works for non hierarchical menus
 function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false) {
 	
 	// Value retrieved with action 'check_section'
@@ -745,6 +806,10 @@ function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false
 		
 		// Display menu
 		foreach ((array) $menu_items as $key => $menu_item) {
+
+			// Parent pages only
+			if ($menu_item->menu_item_parent != 0) 
+				continue;
 		
 			$object_id = $menu_item->object_id;
 			$title     = $menu_item->title;
@@ -1063,5 +1128,17 @@ function nls2br($str) {
 function clear_br_tags($content) {
 	$content = str_ireplace('<br />', '<span class="sep"></span>', $content);
 	return $content;
+}
+
+// Beautify links
+function get_pretty_link($link) {
+
+    // Remove http://
+    $link = str_replace('http://', '', $link);
+
+    // Remove "/" at the end
+    $link = rtrim($link, '/');
+
+    return $link;
 }
 ?>
