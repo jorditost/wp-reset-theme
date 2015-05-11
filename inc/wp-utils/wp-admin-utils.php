@@ -29,10 +29,10 @@ function change_post_menu_label() {
 
         // Ratings
         if ($menu_item[0] == 'Posts') {
-            $menu[$key][0] = 'Journal';
+            $menu[$key][0] = 'Blog';
 
         // Ratings
-        } else if ($menu_item[0] == 'kk Star Ratings') {
+        } /*else if ($menu_item[0] == 'kk Star Ratings') {
             $menu[$key][0] = 'Ratings';
         
         // Maps
@@ -46,7 +46,7 @@ function change_post_menu_label() {
             // Change colors
             $menu[$key][4] = 'menu-top toplevel_page_register';
             $menu[$key][5] = 'toplevel_page_register';
-        }
+        }*/
     }
 
     // Remove menu items
@@ -56,6 +56,17 @@ function change_post_menu_label() {
     echo '';
 }
 add_action( 'admin_menu', 'change_post_menu_label' );
+
+// Remove admin menus
+// http://wp.tutsplus.com/tutorials/creative-coding/customizing-your-wordpress-admin/
+function remove_admin_menus() {
+    // Remove menus
+    //remove_menu_page('edit.php');         // Remove Posts
+    remove_menu_page('edit-comments.php');  // Remove Comments
+    //remove_menu_page('link-manager.php'); // Remove Links
+    //remove_menu_page('tools.php');
+}
+add_action( 'admin_menu', 'remove_admin_menus' );
 
 // Custom menu order
 function custom_menu_order($menu_ord) {
@@ -67,9 +78,7 @@ function custom_menu_order($menu_ord) {
 
         'edit.php?post_type=page',          // Pages
         'edit.php',                         // Posts
-        'edit.php?post_type=tribe_events',  // Events
-        'edit.php?post_type=place',         // Places
-        'edit.php?post_type=fact',          // Facts
+        //'edit.php?post_type=cpt_name',      // Custom Post Type
 
         'upload.php',                       // Media
         //'link-manager.php',               // Links
@@ -92,6 +101,19 @@ function custom_menu_order($menu_ord) {
 add_filter('custom_menu_order', 'custom_menu_order'); // Activate custom_menu_order
 add_filter('menu_order', 'custom_menu_order');
 
+
+// Remove category from edit/add new post screen
+function my_list_terms_exclusions( $exclusions, $args ) {
+  global $pagenow;
+  if (in_array($pagenow,array('post.php','post-new.php'))) {
+    $exclusions = " {$exclusions} AND t.slug NOT IN ('twitter')";
+  }
+  return $exclusions;
+}
+//add_filter('list_terms_exclusions', 'my_list_terms_exclusions', 10, 2);
+
+// Remove admin bar
+add_filter('show_admin_bar', '__return_false');
 
 ///////////////////////
 // TinyMCE Functions

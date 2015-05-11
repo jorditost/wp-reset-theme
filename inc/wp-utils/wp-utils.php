@@ -1040,7 +1040,7 @@ function check_section() {
         $post_type_obj = get_post_type_object($post_type);
 
         // Get post type slug
-        $post_type_slug = $post_type_obj->rewrite[slug];
+        $post_type_slug = $post_type_obj->rewrite['slug'];
         // $post_type_slug = $post_type_obj->rewrite[slug];
 
         // Filter if page slug has a "/"

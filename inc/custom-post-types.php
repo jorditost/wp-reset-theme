@@ -164,9 +164,9 @@ add_action('init','add_custom_post_type_archives');*/
 // Add custom taxonomy terms to post type permalinks
 /*function add_custom_taxonomy_to_permalink() {
 
-	$post_name    = 'team';
-	$taxonomy     = 'team-category';
-	$rewrite_slug = 'about/team'; // The rewrite slug set in 'register_post_type'
+	$post_name    = 'work';
+	$taxonomy     = 'work-category';
+	$rewrite_slug = 'works'; // The rewrite slug set in 'register_post_type'
 
 	add_rewrite_rule('^' . $rewrite_slug . '/([^/]+)/([^/]+)/?','index.php?post_type=' . $post_name . '&' . $taxonomy . '=$matches[1]&' . $post_name . '=$matches[2]','top');
 }
@@ -174,9 +174,9 @@ add_action('init','add_custom_taxonomy_to_permalink');
 
 function custom_post_type_link( $post_link, $id = 0 ) {
 
-	$post_name    = 'team';
-	$taxonomy     = 'team-category';
-	$rewrite_slug = 'about/team'; // The rewrite slug set in 'register_post_type'
+	$post_name    = 'work';
+	$taxonomy     = 'work-category';
+	$rewrite_slug = 'works'; // The rewrite slug set in 'register_post_type'
 
 	$post = get_post($id);
 	if (is_wp_error($post) || $post_name != $post->post_type || empty($post->post_name))
@@ -191,7 +191,7 @@ function custom_post_type_link( $post_link, $id = 0 ) {
 		$taxonomy_term = $taxonomy_term_obj->slug;
 	}
 
-	return home_url(user_trailingslashit( $rewrite_slug . '/$taxonomy_term/$post->post_name' ));
+	return home_url(user_trailingslashit( $rewrite_slug . '/'. $taxonomy_term . '/' . $post->post_name ));
 }
 add_filter( 'post_type_link', 'custom_post_type_link' , 10, 2 );*/
 

@@ -182,48 +182,6 @@ add_action('template_redirect', 'custom_template_redirect');*/
 
 
 
-///////////////////////////////
-// Theme Admin Customization
-///////////////////////////////
-
-// Edit admin menus
-// http://wp.tutsplus.com/tutorials/creative-coding/customizing-your-wordpress-admin/
-function edit_admin_menus() {
-    // Remove menus
-    //remove_menu_page('edit.php');         // Remove Posts
-    remove_menu_page('edit-comments.php');  // Remove Comments
-    //remove_menu_page('link-manager.php'); // Remove Links
-    //remove_menu_page('tools.php');
-}
-add_action( 'admin_menu', 'edit_admin_menus' );
-
-// Custom Menu Order
-function custom_menu_order($menu_ord) {
-    if (!$menu_ord) return true;
-    return array(
-        'index.php',                    // this represents the dashboard link
-        //'edit.php',                   //the posts tab
-        'edit.php?post_type=page',       //the pages tab
-        //'edit.php?post_type=umfrage'   //the "umfrage" tab
-    );
-}
-//add_filter('custom_menu_order', 'custom_menu_order');
-//add_filter('menu_order', 'custom_menu_order');
-
-// Remove category from edit/add new post screen
-function my_list_terms_exclusions( $exclusions, $args ) {
-  global $pagenow;
-  if (in_array($pagenow,array('post.php','post-new.php'))) {
-    $exclusions = " {$exclusions} AND t.slug NOT IN ('twitter')";
-  }
-  return $exclusions;
-}
-//add_filter('list_terms_exclusions', 'my_list_terms_exclusions', 10, 2);
-
-// Remove admin bar
-add_filter('show_admin_bar', '__return_false');
-
-
 /////////////////
 // Theme Setup   
 /////////////////
@@ -343,7 +301,7 @@ function my_scripts_method() {
     global $load_jquery_in_footer;
 
     wp_deregister_script( 'jquery' );
-    wp_register_script( 'jquery', ( "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ), false, false, $load_jquery_in_footer);
+    wp_register_script( 'jquery', ( "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" ), false, false, $load_jquery_in_footer);
 
     global $detect;
     global $test;
