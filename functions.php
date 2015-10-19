@@ -387,6 +387,8 @@ function remove_head_links() {
     remove_action( 'wp_head', 'adjacent_posts_rel_link', 10, 0 ); // Display relational links for the posts adjacent to the current post.
     remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0 );
     remove_action( 'wp_head', 'wp_generator' ); // Display the XHTML generator that is generated on the wp_head hook, WP version
+    remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+    remove_action( 'wp_print_styles', 'print_emoji_styles' );
 }
 add_action('init', 'remove_head_links');
 //remove_action('wp_head', 'wp_generator');
