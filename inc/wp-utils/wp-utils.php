@@ -10,7 +10,7 @@
  */
 
 /////////////////////
-// DEBUG Functions   
+// DEBUG Functions
 /////////////////////
 
 function print_query() {
@@ -31,7 +31,7 @@ function var_template_include( $t ){
 
 
 ////////////////////////
-// Template Functions   
+// Template Functions
 ////////////////////////
 
 function get_include_part($file_name) {
@@ -65,17 +65,17 @@ if (!function_exists('is_index')) {
 // LOOP Functions
 ////////////////////
 
-if ( !function_exists('get_the_slug') ) { 	
+if ( !function_exists('get_the_slug') ) {
 	function get_the_slug() {
 		global $post;
 		return $post->post_name;
-	}	
+	}
 }
 
-if ( !function_exists('the_slug') ) { 
+if ( !function_exists('the_slug') ) {
 	function the_slug() {
 		echo get_the_slug();
-	}	
+	}
 }
 
 
@@ -85,9 +85,9 @@ if ( !function_exists('the_slug') ) {
 
 // Function that removes "Private" in private posts
 function the_title_trim( $title ) {
-			
+
     $title = esc_attr($title);
-	
+
     $findthese = array(
         '#Privado:#',
         '#Privat:#',
@@ -109,7 +109,7 @@ add_filter('the_title', 'the_title_trim');
 
 
 ///////////////////////
-// CONTENT Functions  
+// CONTENT Functions
 ////////////////////////
 
 // Function that formats content like 'the_content'
@@ -121,7 +121,7 @@ function format_content( $content ) {
 }
 
 function get_the_content_with_formatting ($more_link_text = '(more…)', $stripteaser = 0, $more_file = '') {
-	
+
 	$content = get_the_content($more_link_text, $stripteaser, $more_file);
 	$content = format_content($content);
 	return $content;
@@ -129,11 +129,11 @@ function get_the_content_with_formatting ($more_link_text = '(more…)', $stript
 
 // Get content with a maximum number of chars
 function the_content_limit( $max_char, $more_link_text = "", $stripteaser = 0, $more_file = '' ) {
-	
+
     $content = get_the_content($more_link_text, $stripteaser, $more_file);
     $content = format_content($content);
     $content = strip_tags($content);
- 
+
 	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
 		$content = substr($content, 0, $blank_space);
 
@@ -149,7 +149,7 @@ function the_content_limit( $max_char, $more_link_text = "", $stripteaser = 0, $
 	}
 	else {
 		echo '<span>'.$content.'</span>';
-		if ( strlen($content)>$max_char && $more_link_text != "" ) {		  
+		if ( strlen($content)>$max_char && $more_link_text != "" ) {
 			if ( $more_link_text != "" ) {
 				echo '&nbsp;<a class="more" href="';
 				the_permalink();
@@ -175,7 +175,7 @@ function the_contact_content() {
 // Remove empty paragraphs from content
 function remove_empty_paragraphs($content) {
 
-    /*$pattern = "/<p[^>]*><\\/p[^>]*>/";   
+    /*$pattern = "/<p[^>]*><\\/p[^>]*>/";
     $content = preg_replace($pattern, '', $content);*/
     $content = str_replace("<p></p>","",$content);
     return $content;
@@ -183,8 +183,8 @@ function remove_empty_paragraphs($content) {
 add_filter('the_content', 'remove_empty_paragraphs');
 
 // Solution to WordPress adding br and p tags around shortcodes
-remove_filter( 'the_content', 'wpautop' );
-add_filter( 'the_content', 'wpautop' , 12);
+// remove_filter( 'the_content', 'wpautop' );
+// add_filter( 'the_content', 'wpautop' , 12);
 
 // Filter paragraphs on images
 function filter_ptags_on_images($content){
@@ -206,9 +206,19 @@ function has_content() {
 	return (!empty($content));
 }
 
+function is_content_empty($content) {
+    $content = preg_replace("/(\r\n){3,}/","\r\n\r\n", trim($content));
+	$content = preg_replace("/ +/", " ", $content);
+
+	//If you want to get rid of the extra space at the start of the line:
+	$content = preg_replace("/^ +/", "", $content);
+
+	return (empty($content));
+}
+
 // Returns if a page has content or post thumbnail
 function has_content_or_thumbnail() {
-	
+
 	return ( has_content() || has_post_thumbnail() );
 }
 
@@ -218,12 +228,12 @@ function has_content_or_thumbnail() {
 ///////////////////////
 
 function get_the_content_split($class = 'block') {
-	
+
 	global $pages;
-	
+
 	$content = '';
 	$result  = '';
-	
+
 	if (count($pages) > 1) {
 		for($i = 0; $i < count($pages); $i++) {
 			$content = $pages[$i];
@@ -232,7 +242,7 @@ function get_the_content_split($class = 'block') {
 	} else {
 		$result = get_the_content();
 	}
-	
+
 	return $result;
 }
 
@@ -251,25 +261,25 @@ function the_content_split_filter($content) {
 
 function get_content_pages_count() {
 	global $pages;
-	return count($pages);	
+	return count($pages);
 }
 
 // Function that returns the content for a given page
 function the_content_page($pagenum) {
-    
+
     global $pages;
-    
+
     if (count($pages) > 1 && count($pages) >= $pagenum) {
-        $content = get_content_page($pagenum);    
+        $content = get_content_page($pagenum);
     }
-    
+
     echo $content;
 }
 
 function get_content_page($pagenum) {
-    
+
     global $pages;
-    
+
     if (count($pages) < $pagenum) return '';
 
     $content = $pages[$pagenum-1];
@@ -299,13 +309,13 @@ function get_manual_excerpt() {
 }
 
 function the_manual_excerpt($apply_filters = true) {
-	
+
 	$content = get_manual_excerpt();
-	
+
 	if ($apply_filters) {
 	    $content = format_content($content);
     }
-    
+
 	echo $content;
 }
 
@@ -315,7 +325,7 @@ function the_excerpt_limit( $max_char ) {
     $content = get_the_excerpt();
     $content = format_content($content);
     $content = strip_tags($content);
- 
+
 	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
 		$content = substr($content, 0, $blank_space);
 
@@ -323,11 +333,21 @@ function the_excerpt_limit( $max_char ) {
 	}
 	else {
 		echo $content;
-		
-		if ( strlen($content)>$max_char && $more_link_text != "" ) {		  
+
+		if (strlen($content)>$max_char) {
+		// if ( strlen($content)>$max_char && $more_link_text != "" ) {
 			echo '…';
 		}
 	}
+}
+
+function the_manual_excerpt_or_limit($max_char) {
+
+    if (has_excerpt()) {
+        the_manual_excerpt();
+    } else {
+        the_excerpt_limit($max_char);
+    }
 }
 
 // Get the content with a maximum number of chars
@@ -336,7 +356,7 @@ function get_the_content_limit( $max_char ) {
     $content = get_the_content();
     //$content = format_content($content);
     //$content = strip_tags($content);
- 
+
 	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
 		$content = substr($content, 0, $blank_space);
 
@@ -344,12 +364,30 @@ function get_the_content_limit( $max_char ) {
 	}
 	else {
 		echo $content;
-		
-		if ( strlen($content)>$max_char && $more_link_text != "" ) {		  
+
+		if ( strlen($content)>$max_char && $more_link_text != "" ) {
 			echo '…';
 		}
 	}
 }
+
+// Get the content with a maximum number of chars
+function limit_text( $content, $max_char ) {
+
+	if ((strlen($content)>$max_char) && ($blank_space = strpos($content, " ", $max_char ))) {
+		$content = substr($content, 0, $blank_space);
+
+		echo $content . '…';
+	}
+	else {
+		echo $content;
+
+		if ( strlen($content)>$max_char && $more_link_text != "" ) {
+			echo '…';
+		}
+	}
+}
+
 
 function get_more_link($permalink, $more_text) {
 	return '<a class="more-link" href="'. $permalink . '">' . $more_text . '</a>';
@@ -366,27 +404,62 @@ function get_category_ID_by_slug( $slug ) {
 }
 
 function get_link_category_ID_by_slug( $slug ) {
-	$cat = get_term_by('slug', $slug, 'link_category');	
+	$cat = get_term_by('slug', $slug, 'link_category');
 	if ($cat) return $cat->term_taxonomy_id;
 }
 
-function get_first_category() {
-	
-	global $post;
-	$category = get_the_category();
-	return $category[0]->cat_name;
+function get_top_category() {
+
+    global $post;
+    $category = get_the_category();
+
+    $cats = get_the_category(); // category object
+
+    // Parse only top categories
+    $top_cat_obj = array();
+    foreach($cats as $cat) {
+        if ($cat->parent == 0) {
+            $top_cat_obj[] = $cat;
+        }
+    }
+
+    // Return only first
+    $top_cat_obj = $top_cat_obj[0];
+
+    return $top_cat_obj;
 }
 
-function the_first_category() {
-	
-	echo get_first_category();
+function get_first_category_id() {
+
+	global $post;
+	$category = get_the_category();
+
+    return $category[0]->cat_ID;
+}
+
+function get_first_category($link = false) {
+
+	global $post;
+	$category = get_the_category();
+
+    if ($link) {
+        $link = get_category_link($category[0]->term_id);
+        return '<a href="' . esc_url($link) . '">' . $category[0]->cat_name . '</a>';
+    } else {
+        return $category[0]->cat_name;
+    }
+}
+
+function the_first_category($link = false) {
+
+	echo get_first_category($link);
 }
 
 function get_first_term_object($taxonomy, $only_parent_cat = false) {
 
 	global $post;
 	$terms = get_the_terms( $post->ID, $taxonomy );
-	
+
 	if ($terms && !is_wp_error($terms)) {
 		$first_term = array_shift($terms);
 
@@ -401,14 +474,14 @@ function get_first_term_object($taxonomy, $only_parent_cat = false) {
         	}
         }
 
-		return $first_term;	
+		return $first_term;
 	}
 }
 
 function get_first_term($taxonomy, $only_parent_cat = false) {
 
 	$first_term = get_first_term_object($taxonomy);
-	
+
 	if( $first_term ) {
 
 		// If hierarchical, add parent term for child terms
@@ -426,14 +499,14 @@ function get_first_term($taxonomy, $only_parent_cat = false) {
 }
 
 function the_first_term($taxonomy, $only_parent_cat = false) {
-	
+
 	echo get_first_term($taxonomy, $only_parent_cat);
 }
 
 function get_first_term_slug($taxonomy, $only_parent_cat = false) {
 
 	$first_term = get_first_term_object($taxonomy);
-	
+
 	if ($first_term) {
 
 		// If hierarchical, add parent term for child terms
@@ -450,6 +523,37 @@ function get_first_term_slug($taxonomy, $only_parent_cat = false) {
 	}
 }
 
+function wp_get_object_terms_array($taxonomy) {
+
+    global $post;
+
+    $args = array(
+                'orderby' => 'term_order',
+                'order' => 'ASC',
+                'fields' => 'all'
+            );
+
+    $terms = wp_get_object_terms( $post->ID, $taxonomy );
+
+    if ($terms && !is_wp_error($terms)) {
+        return $terms;
+    }
+
+    return null;
+}
+
+function get_the_terms_array($taxonomy) {
+
+    global $post;
+    $terms = get_the_terms( $post->ID, $taxonomy );
+
+    if ($terms && !is_wp_error($terms)) {
+        return $terms;
+    }
+
+    return array();
+}
+
 // Outputs all terms of a given taxonomy to use them as classes (for filtering)
 function get_the_terms_classes($taxonomy) {
 
@@ -458,7 +562,7 @@ function get_the_terms_classes($taxonomy) {
     if (!$tax_obj) { return; }
 
     $terms = get_the_terms( $post->ID, $taxonomy );
-                            
+
     if ($terms && !is_wp_error($terms)) {
 
         $terms_array = array();
@@ -484,12 +588,85 @@ function get_the_terms_classes($taxonomy) {
     }
 }
 
+function get_the_terms_ids_array($taxonomy) {
+
+    global $post;
+    $tax_obj = get_taxonomy($taxonomy);
+    if (!$tax_obj) { return; }
+
+    $terms = get_the_terms( $post->ID, $taxonomy );
+
+    if ($terms && !is_wp_error($terms)) {
+
+        $terms_array = array();
+        foreach ($terms as $term) {
+            $terms_array[] = $term->term_id;
+
+            // If hierarchical, add parent term for child terms
+            if ($tax_obj->hierarchical && $term->parent != 0) {
+
+            	// Parent term
+            	$parent_term = get_term($term->parent, $taxonomy);
+            	if ($parent_term) {
+            		$terms_array[] = $parent_term->term_id;
+            	}
+            }
+        }
+
+        // Check repeated values
+        $terms_array = array_unique($terms_array);
+
+        // Return categories separated by an empty space
+        return $terms_array;
+    }
+}
+
+function get_term_name_by_slug($slug, $taxonomy) {
+    $term = get_term_by('slug', $slug, $taxonomy);
+    if ($term) {
+        return $term->name;
+    }
+}
+
+function get_the_terms_classes_by_array($terms, $remove_uncategorized = false, $parent_cats_only = false) {
+    if ($terms) {
+
+        $terms_array = array();
+        foreach ($terms as $term) {
+
+            if ($remove_uncategorized && $term->slug == 'uncategorized')
+                continue;
+
+            // If hierarchical, add parent term for child terms
+            if ($term->hierarchical && $term->parent != 0) {
+            	// Parent term
+            	$parent_term = get_term($term->parent, $taxonomy);
+            	if ($parent_term) {
+            		$terms_array[] = $parent_term->slug;
+            	}
+            }
+
+            if ($parent_cats_only && $term->parent != 0) {
+                continue;
+            }
+
+            $terms_array[] = $term->slug;
+        }
+
+        // Check repeated values
+        $terms_array = array_unique($terms_array);
+
+        // Return categories separated by an empty space
+        return join(' ', $terms_array);
+    }
+}
+
 // Outputs the terms string splitted by a separator
 function get_the_terms_string($taxonomy, $sep = ',') {
 
     global $post;
     $terms = get_the_terms( $post->ID, $taxonomy );
-                            
+
     if ($terms && !is_wp_error($terms)) {
 
         $terms_array = array();
@@ -498,10 +675,54 @@ function get_the_terms_string($taxonomy, $sep = ',') {
         }
         return join($sep . ' ', $terms_array);
     }
+
+    return '';
+}
+
+function get_the_terms_string_by_array($terms, $remove_uncategorized = false, $parent_cats_only = false, $sep = ',') {
+
+    global $post;
+
+    if ($terms) {
+        $terms_array = array();
+        foreach ($terms as $term) {
+            if ($remove_uncategorized && $term->slug == 'uncategorized')
+                continue;
+
+            // If hierarchical, add parent term for child terms
+            if ($term->hierarchical && $term->parent != 0) {
+            	// Parent term
+            	$parent_term = get_term($term->parent, $taxonomy);
+            	if ($parent_term) {
+            		$terms_array[] = $parent_term->name;
+            	}
+            }
+
+            if ($parent_cats_only && $term->parent != 0) {
+                continue;
+            }
+
+            $terms_array[] = $term->name;
+        }
+
+        // Check repeated values
+        $terms_array = array_unique($terms_array);
+
+        return join($sep . ' ', $terms_array);
+    }
+
+    return '';
+}
+
+function get_term_slug_by_id($term_id, $taxonomy) {
+    $term = get_term_by('id', $term_id, $taxonomy);
+    if ($term) {
+        return $term->slug;
+    }
 }
 
 ////////////////////
-// PAGE Functions  
+// PAGE Functions
 ////////////////////
 
 // Append page slug to body class
@@ -517,7 +738,7 @@ add_filter( 'body_class', 'add_body_class' );
 function get_page_ID_by_path($path, $post_type = 'page') {
 
     $page = get_page_by_path($path, 'OBJECT', $post_type);
-    
+
     if ($page) return $page->ID;
     else       return null;
 }
@@ -572,15 +793,15 @@ function get_page_content_by_path($path, $format_content = true, $more_text = ''
 	return $return;
 }
 
-// This function returns formated content by path. 
+// This function returns formated content by path.
 // setup_postdata, makes it safer (when working with global $post) than "get_page_content_by_slug"
 function get_page_resume_by_path($path, $show_title = false, $more_text = '') {
 
-    $query_page = get_page_by_path($path); 
-    
+    $query_page = get_page_by_path($path);
+
     $return = '';
     if ($query_page) {
-        
+
         if ($show_title) {
             $return .= '<h5>' . __($query_page->post_title) . '</h5>';
         }
@@ -602,12 +823,12 @@ function is_subpage( $page_id ) {
 
 		$post = get_page($page_id);
 		$is_page = ($post != null);
-	
+
 	} else {
 		global $post;
 		$is_page = is_page();
 	}
-	                               
+
     if ( $is_page && $post->post_parent ) {		// test to see if the page has a parent
 		return $post->post_parent;				// return the ID of the parent post
     } else {									// there is no parent so…
@@ -616,7 +837,7 @@ function is_subpage( $page_id ) {
 }
 
 function is_subpage_of_by_id( $parent_id ) {
-	
+
 	global $post;
 
 	if (is_page()) {
@@ -628,9 +849,9 @@ function is_subpage_of_by_id( $parent_id ) {
 }
 
 function is_subpage_of( $parent_slug ) {
-	
+
 	global $post;
-	
+
 	$parent_id = $post->post_parent;
 
 	if (is_page() && $parent_id) {
@@ -674,12 +895,12 @@ function get_post_custom_field($custom_field) {
 
 // Get an array with all custom fields attached to a page
 if ( !function_exists('get_custom_fields_array') ) {
-	
+
 	function get_custom_fields_array() {
 		global $post;
 		$custom_fields = get_post_custom($post->ID);
 		$hidden_field = '_';
-		
+
 		foreach( $custom_fields as $key => $value ){
 			if( !empty($value) ) {
 				$pos = strpos($key, $hidden_field);
@@ -700,21 +921,21 @@ if ( !function_exists('get_custom_fields_def_list') ) {
 		$custom_fields = get_custom_fields_array();
 
 		$return = '';
-		
+
 		if ($list == 'ul') {
-			
+
 			foreach( $custom_field_labels as $key => $value ){
 				if( !empty($value) && !empty($custom_fields[$key][0])) {
 					$return .= '<li><strong>' . $value . ':</strong> ' . $custom_fields[$key][0] . '</li>';
 				}
 			}
 			$return = (!empty($return)) ? '<ul>' . $return . '</ul>' : '';
-		
+
 		} else {
-			
+
 			foreach( $custom_field_labels as $key => $value ){
 				if( !empty($value) && !empty($custom_fields[$key][0])) {
-					
+
 					$return .= '<dt>' . $value . ':</dt><dd>' . $custom_fields[$key][0] . '</dd>';
 				}
 			}
@@ -727,7 +948,7 @@ if ( !function_exists('get_custom_fields_def_list') ) {
 
 
 ///////////////////
-// SIDEBAR Utils   
+// SIDEBAR Utils
 ///////////////////
 
 function get_sidebar_page() {
@@ -765,13 +986,13 @@ function get_sidebar_page() {
 
 
 ////////////////
-// MENU Utils   
+// MENU Utils
 ////////////////
 
 // Change menu items ID adding related page slug
 
 function change_nav_menu_id($current_id,$item_details){
-	
+
 	return 'menu-item-' . $item_details->post_name;
 }
 add_filter('nav_menu_item_id','change_nav_menu_id',10,2);
@@ -788,29 +1009,29 @@ add_filter( 'wp_nav_menu_args', 'my_wp_nav_menu_args' );
 // Custom navigation menu
 // !!! This function only works for non hierarchical menus
 function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false) {
-	
+
 	// Value retrieved with action 'check_section'
     global $current_section;
 
     if (($locations = get_nav_menu_locations()) && isset($locations[$menu_name])) {
-    	
+
 		$menu 		= wp_get_nav_menu_object( $locations[ $menu_name ] );
 		$menu_items = wp_get_nav_menu_items($menu->term_id);
-	
+
 		$menu_list  = '<ul id="menu-' . $menu_name . '" class="menu">';
 
 		// Home link
 		if ($show_home && !(is_home() || is_front_page())) {
 			$menu_list .= '<li id="menu-item-home"><a href="' . get_option('home') . '/">' . __('Home') . '</a></li>';
 		}
-		
+
 		// Display menu
 		foreach ((array) $menu_items as $key => $menu_item) {
 
 			// Parent pages only
-			if ($menu_item->menu_item_parent != 0) 
+			if ($menu_item->menu_item_parent != 0)
 				continue;
-		
+
 			$object_id = $menu_item->object_id;
 			$title     = $menu_item->title;
 			$url       = $menu_item->url;
@@ -829,18 +1050,18 @@ function wp_custom_nav_menu($menu_name, $show_home = false, $hide_active = false
 			}
 
 		    $class = $is_active ? ' class="active"' : '';
-		    
+
 		    $menu_list .= '<li id="menu-item-' . $page_slug . '"'. $class .'><a href="' . $url . '">' . $title . '</a></li>';
 		}
 		$menu_list .= '</ul>';
-		
+
 		echo $menu_list;
 	}
 }
 
 
 ////////////////////////////////////////////
-// CUSTOM POST TYPE Archives & List Utils   
+// CUSTOM POST TYPE Archives & List Utils
 ////////////////////////////////////////////
 
 // Function that lists pages from the same Custom Post Type
@@ -891,8 +1112,8 @@ function wp_list_custom_posts( $args = '', $exclude_current = false) {
 	<li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
 <?php endif; ?>
 
-<?php 
-    endforeach; 
+<?php
+    endforeach;
     wp_reset_postdata();
 }
 
@@ -955,7 +1176,7 @@ function wp_list_post_types( $args ) {
         return $output;
 }
 
-// This function shows links to the post archives for a given post type. 
+// This function shows links to the post archives for a given post type.
 // It only accepts 'monthly' and 'yearly' archives. Default is 'monthly'
 function wp_get_custom_post_archives($args, $echo = true) {
 
@@ -963,7 +1184,7 @@ function wp_get_custom_post_archives($args, $echo = true) {
 	$rewrite_slug = isset($args['rewrite_slug']) ? $args['rewrite_slug'] : $post_type;
 	$type    	  = isset($args['type'])  		 ? $args['type']  		 : 'monthly';
 
-    global $wpdb; 
+    global $wpdb;
     $sql = $wpdb->prepare("SELECT * FROM $wpdb->posts WHERE post_type = %s AND post_status = 'publish' GROUP BY YEAR(wp_posts.post_date), MONTH(wp_posts.post_date) ORDER BY wp_posts.post_date DESC", $post_type);
     $results = $wpdb->get_results($sql);
 
@@ -974,7 +1195,7 @@ function wp_get_custom_post_archives($args, $echo = true) {
             $year = date('Y', strtotime( $r->post_date ) );
             $month = date('F', strtotime( $r->post_date ) );
             $month_num = date('m', strtotime( $r->post_date ) );
-            
+
             if ($type == 'yearly') {
                 $link = get_bloginfo('siteurl') . '/' . $rewrite_slug . '/' . $year;
                 $text = $year;
@@ -992,25 +1213,25 @@ function wp_get_custom_post_archives($args, $echo = true) {
 
         echo $output;
     }
-    
+
     return false;
 }
 
 
 ///////////////////
-// SECTION Utils   
+// SECTION Utils
 ///////////////////
 
 // Function that saves in a global variable the current section of a page by its top level page
 function check_section() {
-    
+
     global $current_section;
     global $wp_query;
     global $post;
 
     // Pages
     if (is_page()) {
-       
+
         // Check parent
         $post_parent = $post->post_parent;
 
@@ -1072,7 +1293,7 @@ function check_section() {
 
 
 //////////////////
-// STRING Utils   
+// STRING Utils
 //////////////////
 
 function get_relative_url($permalink) {
@@ -1105,16 +1326,16 @@ function format_text_links($text) {
 // Replace single <br> for a <span> tag
 function nls2span($str) {
 
-  return str_replace('<span></span>', '', '<span>' 
-        . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</span>$0<span>', $str) 
+  return str_replace('<span></span>', '', '<span>'
+        . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</span>$0<span>', $str)
         . '</span>');
 }
 
 // Replace single <br> for a <p> tag
 function nls2p($str) {
 
-  return str_replace('<p></p>', '', '<p>' 
-        . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</p>$0<p>', $str) 
+  return str_replace('<p></p>', '', '<p>'
+        . preg_replace('#([\r\n]\s*?[\r\n]){1,}#', '</p>$0<p>', $str)
         . '</p>');
 }
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Wordpress Admin Utils
@@ -34,7 +34,7 @@ function change_post_menu_label() {
         // Ratings
         } /*else if ($menu_item[0] == 'kk Star Ratings') {
             $menu[$key][0] = 'Ratings';
-        
+
         // Maps
         } else if ($menu_item[0] == 'MapPress') {
             $menu[$key][0] = 'Maps';
@@ -71,7 +71,7 @@ add_action( 'admin_menu', 'remove_admin_menus' );
 // Custom menu order
 function custom_menu_order($menu_ord) {
     if (!$menu_ord) return true;
-     
+
     return array(
         'index.php',                        // Dashboard
         'separator1',                       // First separator
@@ -83,7 +83,7 @@ function custom_menu_order($menu_ord) {
         'upload.php',                       // Media
         //'link-manager.php',               // Links
         //'edit-comments.php',              // Comments
-        
+
         'separator2',                       // Second separator
 
         'themes.php',                       // Appearance
@@ -113,7 +113,7 @@ function my_list_terms_exclusions( $exclusions, $args ) {
 //add_filter('list_terms_exclusions', 'my_list_terms_exclusions', 10, 2);
 
 // Remove admin bar
-add_filter('show_admin_bar', '__return_false');
+// add_filter('show_admin_bar', '__return_false');
 
 ///////////////////////
 // TinyMCE Functions
