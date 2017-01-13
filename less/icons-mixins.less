@@ -1,0 +1,34 @@
+.icon-container() {
+    line-height: 1;
+}
+
+.set-icon-size(@icon-size) {
+    height: @icon-size;
+    &:before {
+        font-size: @icon-size;
+    }
+}
+
+.icon-fontset(@icon-size: 16px) {
+    // set font
+    &:before {
+        font-family: "htwg-icons" !important;
+        // content: attr(data-icon);
+        font-style: normal !important;
+        font-weight: normal !important;
+        font-variant: normal !important;
+        text-transform: none !important;
+        speak: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        font-size: @icon-size;
+    }
+}
+
+.icon-arrow() {
+    &:before {
+      content: "\61";
+    }
+}
